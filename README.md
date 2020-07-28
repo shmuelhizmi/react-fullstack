@@ -4,37 +4,72 @@ create reactive node express servers using react!
 
 ## Example code
 
-```typescript
+```tsx
 import React from "react";
-import { RequestHandler } from "express";
-import { Server, Route, Render, Router } from "@react-express/server";
+import express, { RequestHandler, Application } from "express";
+import {
+  Server,
+  Route,
+  Render,
+  Router,
+  ReactRoute,
+} from "@react-express/server";
+import * as path from "path";
 
-const hellowWorld: RequestHandler = (req, res) => {
-  res.send("<h1>Hello world</h1>");
-};
 const secret: RequestHandler = (req, res) => {
-  res.send("<h1>Hello world</h1>");
+  res.send(JSON.stringify({ key: "secretKey11" }));
 };
 
-const posts = ["hey", "bey"];
+const posts = ["hey", "bey", "hello", "world 🗺"];
 
-const getPosts: RequestHandler = (req, res) => res.send(JSON.stringify(posts));
-
-const post: RequestHandler = (req, res, next) => {
-  const newPost = req.params.post;
+const post: RequestHandler = (req, res) => {
+  const newPost = req.body.post;
   if (newPost && typeof newPost === "string") {
     posts.push(newPost);
   }
-  return getPosts(req, res, next);
+  return res.send(JSON.stringify(posts));
+};
+
+const use = (app: Application) => {
+  app.use(express.json(), express.urlencoded({ extended: true }));
 };
 
 Render(
-  <Server listen port={2345} then={() => console.log("finish")}>
-    <Route path="/" get={hellowWorld} />
+  <Server reference={use} listen port={2345} then={() => console.log("finish")}>
+    <ReactRoute>
+      <h1>Hello world</h1>
+    </ReactRoute>
     <Route path="/hidden" get={secret} />
     <Router path="/posts">
-      <Route path="/all" get={getPosts} />
-      <Route path="/post/:post" get={post} />
+      <ReactRoute rootPath="/" assetsDir={path.join(__dirname, "./../assets/")}>
+        {() => (
+          <html>
+            <head>
+              <title>the first real fullstack react app</title>
+            </head>
+            <body>
+              <div id="app">
+                <ol>
+                  {posts.map((post, index) => (
+                    <li
+                      style={{
+                        color: `#${Math.floor(
+                          Math.random() * 16777215
+                        ).toString(16)}`,
+                      }}
+                      key={index}
+                    >
+                      <h1>{post}</h1>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              <script src="./colors.js"></script>
+            </body>
+          </html>
+        )}
+      </ReactRoute>
+      <Route path="/post/:post" post={post} />
     </Router>
   </Server>
 );
