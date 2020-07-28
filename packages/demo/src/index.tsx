@@ -22,7 +22,7 @@ const post: RequestHandler = (req, res, next) => {
 };
 
 Render(
-  <Server listen port={2345} then={() => console.log("finsh")}>
+  <Server listen port={2345} then={() => console.log("finish")}>
     <Route path="/" get={hellowWorld} />
     <Route path="/hidden" get={secret} />
     <Router path="/posts">
