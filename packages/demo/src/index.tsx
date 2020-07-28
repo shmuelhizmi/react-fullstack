@@ -62,7 +62,7 @@ Render(
           </html>
         )}
       </ReactRoute>
-      <Route path="/post/:post" post={post} />
+      <Route path="/post" post={post} />
     </Router>
   </Server>
 );
