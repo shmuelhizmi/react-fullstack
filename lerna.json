@@ -1,4 +1,5 @@
 {
+  "name": "@react-express/root",
   "packages": [
     "packages/*"
   ],
