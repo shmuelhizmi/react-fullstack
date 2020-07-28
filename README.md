@@ -16,8 +16,8 @@ import {
 } from "@react-express/server";
 import * as path from "path";
 
-const secret: RequestHandler = (req, res) => {
-  res.send(JSON.stringify({ key: "secretKey11" }));
+const helloWorldJson: RequestHandler = (req, res) => {
+  res.send({ hello: "world" });
 };
 
 const posts = ["hey", "bey", "hello", "world 🗺"];
@@ -39,7 +39,7 @@ Render(
     <ReactRoute>
       <h1>Hello world</h1>
     </ReactRoute>
-    <Route path="/hidden" get={secret} />
+    <Route path="/hello-world" get={helloWorldJson} />
     <Router path="/posts">
       <ReactRoute rootPath="/" assetsDir={path.join(__dirname, "./../assets/")}>
         {() => (
@@ -69,7 +69,7 @@ Render(
           </html>
         )}
       </ReactRoute>
-      <Route path="/post/:post" post={post} />
+      <Route path="/post" post={post} />
     </Router>
   </Server>
 );
