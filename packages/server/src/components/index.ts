@@ -1,9 +1,3 @@
-import Route from "./Route";
-import Router from "./Router";
-import Server from "./Server";
+import ReactRoute from "./ReactRoute";
 
-export {
-	Route,
-	Router,
-	Server,
-}
+export { ReactRoute };

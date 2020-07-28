@@ -15,15 +15,21 @@ class Router extends React.Component<RouterProps> {
     return (
       <ApplicationContext.Consumer>
         {(app) => {
-          if (app) {
-            this.router = express.Router();
-            app.use(this.props.path, this.router);
-            if(this.props.reference) this.props.reference(this.router);
-          }
           return (
-            <RouterContext.Provider value={this.router}>
-              {this.props.children}
-            </RouterContext.Provider>
+            <RouterContext.Consumer>
+              {(router) => {
+                if (app) {
+				  this.router = express.Router();
+                  (router || app).use(this.props.path, this.router);
+                  if (this.props.reference) this.props.reference(this.router);
+                }
+                return (
+                  <RouterContext.Provider value={this.router}>
+                    {this.props.children}
+                  </RouterContext.Provider>
+                );
+              }}
+            </RouterContext.Consumer>
           );
         }}
       </ApplicationContext.Consumer>
