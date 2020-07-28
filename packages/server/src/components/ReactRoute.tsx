@@ -1,15 +1,16 @@
 import React from "react";
 import ReactDom from "react-dom/server";
-import { Route } from "@react-express/server-core";
-import { RequestHandler } from "express";
+import { Route, Router } from "@react-express/server-core";
+import express, { RequestHandler } from "express";
 
 interface ReactRouteProps {
-  path?: string;
+  rootPath?: string;
+  assetsDir?: string;
   children: (() => React.ReactNode) | React.ReactNode;
 }
 
 class ReactRoute extends React.Component<ReactRouteProps> {
-  private get: RequestHandler = (_req, res) => {
+  private getApp: RequestHandler = (_req, res) => {
     let reactNodes: React.ReactNode;
     if (typeof this.props.children === "function") {
       reactNodes = (this.props.children as () => React.ReactNode)();
@@ -19,8 +20,19 @@ class ReactRoute extends React.Component<ReactRouteProps> {
     res.send(ReactDom.renderToString(<>{reactNodes}</>));
   };
 
+  serveStaticFiles = (router: express.Router) => {
+    if (this.props.assetsDir) router.use(express.static(this.props.assetsDir));
+  };
+
   render() {
-    return <Route path={this.props.path || "/"} get={this.get} />;
+    return (
+      <Router
+        reference={this.serveStaticFiles}
+        path={this.props.rootPath || "/"}
+      >
+        <Route path="/" get={this.getApp} />
+      </Router>
+    );
   }
 }
 

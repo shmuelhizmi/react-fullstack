@@ -7,14 +7,15 @@ import {
   Router,
   ReactRoute,
 } from "@react-express/server";
+import * as path from "path";
 
 const secret: RequestHandler = (req, res) => {
   res.send(JSON.stringify({ key: "secretKey11" }));
 };
 
-const posts = ["hey", "bey"];
+const posts = ["hey", "bey", "hello", "world 🗺"];
 
-const post: RequestHandler = (req, res, next) => {
+const post: RequestHandler = (req, res) => {
   const newPost = req.params.post;
   if (newPost && typeof newPost === "string") {
     posts.push(newPost);
@@ -30,26 +31,37 @@ Render(
     <Route path="/hidden" get={secret} />
     <Router path="/posts">
       <Router path="/colored">
-        <ReactRoute path="/all">
+        <ReactRoute rootPath="/" assetsDir={path.join(__dirname, "./../assets/")}>
           {() => (
-            <ol>
-              {posts.map((post, index) => (
-                <li
-                  style={{
-                    color: `#${Math.floor(Math.random() * 16777215).toString(
-                      16
-                    )}`,
-                  }}
-                  key={index}
-                >
-                  <h1>{post}</h1>
-                </li>
-              ))}
-            </ol>
+            <html>
+              <head>
+                <title>the first real fullstack react app</title>
+              </head>
+              <body>
+                <div id="app">
+                  <ol>
+                    {posts.map((post, index) => (
+                      <li
+                        style={{
+                          color: `#${Math.floor(
+                            Math.random() * 16777215
+                          ).toString(16)}`,
+                        }}
+                        key={index}
+                      >
+                        <h1>{post}</h1>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+                <script src="./colors.js">
+                </script>
+              </body>
+            </html>
           )}
         </ReactRoute>
       </Router>
-      <ReactRoute path="/all">
+      <ReactRoute rootPath="/all">
         {() => (
           <ol>
             {posts.map((post, index) => (
