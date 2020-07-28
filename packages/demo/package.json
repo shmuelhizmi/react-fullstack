@@ -7,9 +7,9 @@
     "start": "ts-node src"
   },
   "dependencies": {
-    "react": "16.13.1",
+    "@react-express/server": "file:../server",
     "express": "4.17.1",
-    "@react-express/server": "0.0.1"
+    "react": "16.13.1"
   },
   "devDependencies": {
     "typescript": "3.4.3",
