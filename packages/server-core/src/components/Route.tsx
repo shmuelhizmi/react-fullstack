@@ -3,17 +3,34 @@ import { Application, RequestHandler } from "express";
 import { ApplicationContext, RouterContext } from "../context";
 
 export interface RouteProps {
+  /**
+   * the path of the route
+   */
   path: string;
+  /**
+   * handle all requests
+   */
   all?: RequestHandler;
+  /**
+   * handle delete request
+   */
   delete?: RequestHandler;
+  /**
+   * handle get request
+   */
   get?: RequestHandler;
+  /**
+   * handle post request
+   */
   post?: RequestHandler;
+  /**
+   * handle put request
+   */
   put?: RequestHandler;
 }
 
 class Route extends React.Component<RouteProps> {
   private router?: Application;
-  private isMouted = false;
 
   private routerUpdateIndex = 0;
 
@@ -67,10 +84,8 @@ class Route extends React.Component<RouteProps> {
           return (
             <RouterContext.Consumer>
               {(router) => {
-                if ((app || router) && !this.isMouted) {
-                  const newRouter = (router || app) as Application;
-                  this.router = newRouter;
-                  this.isMouted = true;
+                if (app || router) {
+                  this.router = (router || app) as Application;
                 }
                 this.routerDidUpdate();
                 return this.props.children;

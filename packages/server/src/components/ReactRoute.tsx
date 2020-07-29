@@ -1,36 +1,50 @@
 import React from "react";
 import ReactDom from "react-dom/server";
-import { Route, Router } from "@react-express/server-core";
-import express, { RequestHandler } from "express";
+import { Route, Router, Middleware } from "@react-express/server-core";
+import express, { RequestHandler, Request, Response, NextFunction } from "express";
+
+type RequestToReactNode = (req: Request, res: Response, next: NextFunction) => React.ReactNode;
 
 interface ReactRouteProps {
+  /**
+   * the root path that your assets and indexPath will be relative to.
+   * @default rootPath={"/"}
+   */
   rootPath?: string;
+  /**
+   * the path for your index - your react app will be render to rootPath/indexPath
+   * @default indexPath={"/"}
+   */
+  indexPath?: string;
+  /**
+   * Assets directory absolute path
+   * @example assetsDir={path.join(__dirname, "./../assets")}
+   * @default none
+   */
   assetsDir?: string;
-  children: (() => React.ReactNode) | React.ReactNode;
+  children: RequestToReactNode | React.ReactNode;
 }
 
 class ReactRoute extends React.Component<ReactRouteProps> {
-  private getApp: RequestHandler = (_req, res) => {
+  private getApp: RequestHandler = (req, res, next) => {
     let reactNodes: React.ReactNode;
     if (typeof this.props.children === "function") {
-      reactNodes = (this.props.children as () => React.ReactNode)();
+      reactNodes = (this.props.children as RequestToReactNode)(req, res, next);
     } else {
       reactNodes = this.props.children;
     }
     res.send(ReactDom.renderToString(<>{reactNodes}</>));
   };
 
-  serveStaticFiles = (router: express.Router) => {
-    if (this.props.assetsDir) router.use(express.static(this.props.assetsDir));
-  };
-
   render() {
     return (
-      <Router
-        reference={this.serveStaticFiles}
-        path={this.props.rootPath || "/"}
-      >
-        <Route path="/" get={this.getApp} />
+      <Router path={this.props.rootPath || "/"}>
+        {this.props.assetsDir && (
+          <Middleware
+            middlewares={[express.static(this.props.assetsDir, { index: "/" })]}
+          />
+        )}
+        <Route path={this.props.indexPath || "/"} get={this.getApp} />
       </Router>
     );
   }

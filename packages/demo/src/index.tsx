@@ -6,6 +6,7 @@ import {
   Render,
   Router,
   ReactRoute,
+  Middleware,
 } from "@react-express/server";
 import * as path from "path";
 
@@ -23,25 +24,29 @@ const post: RequestHandler = (req, res) => {
   return res.send(posts);
 };
 
-const use = (app: Application) => {
-  app.use(express.json(), express.urlencoded({ extended: true }));
-};
-
 Render(
-  <Server reference={use} listen port={2345} then={() => console.log("finish")}>
+  <Server listen port={2345} then={() => console.log("finish")}>
+    <Middleware
+      middlewares={[(express.json(), express.urlencoded({ extended: true }))]}
+    />
     <ReactRoute>
       <h1>Hello world</h1>
     </ReactRoute>
     <Route path="/hello-world" get={helloWorldJson} />
     <Router path="/posts">
-      <ReactRoute rootPath="/" assetsDir={path.join(__dirname, "./../assets/")}>
-        {() => (
+      <Route path="/post" post={post} />
+      <ReactRoute
+        indexPath={"/:name"}
+        assetsDir={path.join(__dirname, "./../assets/")}
+      >
+        {(req) => (
           <html>
             <head>
               <title>the first real fullstack react app</title>
             </head>
             <body>
               <div id="app">
+                <h1>Hello {req.params.name}</h1>
                 <ol>
                   {posts.map((post, index) => (
                     <li
@@ -52,7 +57,7 @@ Render(
                       }}
                       key={index}
                     >
-                      <h1>{post}</h1>
+                      <h2>{post}</h2>
                     </li>
                   ))}
                 </ol>
@@ -62,7 +67,6 @@ Render(
           </html>
         )}
       </ReactRoute>
-      <Route path="/post" post={post} />
     </Router>
   </Server>
 );
