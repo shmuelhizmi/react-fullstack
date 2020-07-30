@@ -1,11 +1,9 @@
 import React from "react";
-import { ReactRoute } from "@react-express/server";
+import { ReactRoute } from "@react-fullstack/server";
 
 interface State {
   currentPath: string;
 }
-
-console.log(__filename);
 
 class ReactableServer extends React.Component<{}, State> {
   state: State = {
