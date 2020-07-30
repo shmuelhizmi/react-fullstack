@@ -1,2 +1,2 @@
-export * from "@react-express/server-core";
+export * from "@react-fullstack/server-express";
 export * from "./components";

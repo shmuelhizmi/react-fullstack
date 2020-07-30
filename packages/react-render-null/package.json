@@ -1,7 +1,7 @@
 {
-  "name": "@react-express/server-core",
+  "name": "@react-fullstack/react-render-null",
   "version": "0.0.2",
-  "description": "create node express servers using react!",
+  "description": "render react tree to nothing!",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
@@ -12,14 +12,12 @@
     "react": ">=16.0.0"
   },
   "dependencies": {
-    "express": "4.17.1",
-    "react": "16.13.1",
     "react-reconciler": "0.25.1"
   },
   "devDependencies": {
     "@types/express": "4.11.1",
     "@types/react": "16.8.24",
-    "typescript": "3.4.3"
+    "typescript": "3.9.7"
   },
   "keywords": [
     "react",
@@ -39,5 +37,6 @@
   "bugs": {
     "url": "https://github.com/shmuelhizmi/react-express/issues"
   },
-  "homepage": "https://github.com/shmuelhizmi/react-express#readme"
+  "homepage": "https://github.com/shmuelhizmi/react-express#readme",
+  "gitHead": "a39ae723a452ea428119be0b4aa95865b71c1357"
 }

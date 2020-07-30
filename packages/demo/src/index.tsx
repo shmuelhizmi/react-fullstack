@@ -7,7 +7,7 @@ import {
   Router,
   ReactRoute,
   Middleware,
-} from "@react-express/server";
+} from "@react-fullstack/server";
 import * as path from "path";
 
 const helloWorldJson: RequestHandler = (req, res) => {

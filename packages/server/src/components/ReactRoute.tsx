@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDom from "react-dom/server";
-import { Route, Router, Middleware } from "@react-express/server-core";
+import { Route, Router, Middleware } from "@react-fullstack/server-express";
 import express, { RequestHandler, Request, Response, NextFunction } from "express";
 
 type RequestToReactNode = (req: Request, res: Response, next: NextFunction) => React.ReactNode;
