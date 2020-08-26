@@ -34,7 +34,7 @@ class Route extends React.Component<RouteProps> {
 
   private routerUpdateIndex = 0;
 
-  routerDidUpdate = () => {
+  private routerDidUpdate = () => {
     if (this.router) {
       this.routerUpdateIndex++;
       const currentRouterUpdateIndex = this.routerUpdateIndex;
@@ -76,6 +76,10 @@ class Route extends React.Component<RouteProps> {
       });
     }
   };
+
+  componentWillUnmount = () => {
+	  this.routerUpdateIndex++;
+  }
 
   render() {
     return (

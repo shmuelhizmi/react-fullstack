@@ -1,7 +1,8 @@
 {
   "name": "@react-fullstack/root",
   "packages": [
-    "packages/*"
+    "packages/*",
+    "plugins_packages/*/*"
   ],
   "version": "0.0.2"
 }
