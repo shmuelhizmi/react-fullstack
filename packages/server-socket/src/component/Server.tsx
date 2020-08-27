@@ -1,5 +1,5 @@
 import React from "react";
-import io, { Server as SocketServer } from "socket.io";
+import io, { Server as SocketServer, Namespace } from "socket.io";
 import { Server as HTTPServer, createServer } from "http";
 import { ServerContext, NamespaceContext } from "../context";
 
@@ -62,7 +62,7 @@ class Server extends React.Component<ServerProps> {
   render() {
     return (
       <ServerContext.Provider value={this.app}>
-        <NamespaceContext.Provider value={this.app.sockets}>
+        <NamespaceContext.Provider value={this.app as unknown as Namespace}>
           {this.props.children}
         </NamespaceContext.Provider>
       </ServerContext.Provider>

@@ -1,0 +1,6 @@
+0 silly argv { _: [ 'bootstrap' ], lernaVersion: '3.20.2', '$0': 'lerna' }
+1 notice cli v3.20.2
+2 verbose rootPath /home/shmuelhizmi/Documents/projects/react-fullstck
+3 error JSONError: Unexpected token } in JSON at position 563 while parsing near '...socket.io-client"  },  "scripts": {  ...' in ../demo-client/package.json
+3 error     at module.exports (/home/shmuelhizmi/.nvm/versions/node/v12.14.0/lib/node_modules/lerna/node_modules/parse-json/index.js:26:19)
+3 error     at parse (/home/shmuelhizmi/.nvm/versions/node/v12.14.0/lib/node_modules/lerna/node_modules/load-json-file/index.js:15:9)

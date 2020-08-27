@@ -4,7 +4,7 @@ import {
   SocketConnectionContext,
   NamespaceContext,
 } from "../context";
-import { Socket, Server } from "socket.io";
+import { Socket, Server, Namespace } from "socket.io";
 
 interface ConnectionProps {
   onConnection?: (socket: Socket) => void;
@@ -20,10 +20,10 @@ class Connection extends React.Component<ConnectionProps, ConnectionState> {
     connections: [],
   };
 
-  static contextType = ServerContext;
+  static contextType = NamespaceContext;
 
   componentDidMount = () => {
-    const server = this.context as Server;
+    const server = this.context as Namespace;
     server.on("connection", (socket) => {
       if (this.props.onConnection) this.props.onConnection(socket);
       if (this.props.children) {
@@ -51,7 +51,7 @@ class Connection extends React.Component<ConnectionProps, ConnectionState> {
         {this.state.connections.map((connection) => (
           <React.Fragment key={connection.id}>
             <SocketConnectionContext.Provider value={connection.socket}>
-              <NamespaceContext.Provider value={connection.socket.nsp}>
+              <NamespaceContext.Provider value={connection.socket as unknown as Namespace}>
                 {connection.children}
               </NamespaceContext.Provider>
             </SocketConnectionContext.Provider>

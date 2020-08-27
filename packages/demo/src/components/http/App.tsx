@@ -7,6 +7,7 @@ import {
 } from "@react-fullstack/server-express";
 import { ReactRoute } from "@react-fullstack/plugin-server-side-rendring";
 import express, { RequestHandler } from "express";
+import * as path from "path";
 import ReactableServer from "./ReactableServerComponent";
 
 const App = () => {

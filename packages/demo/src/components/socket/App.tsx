@@ -1,14 +1,14 @@
 import React from "react";
-import { Server, Connection, Room } from "@react-fullstack/server-socket";
+import { Server, Connection, Room, On } from "@react-fullstack/server-socket";
 import Game from "./Game";
 
-const App = () => {
+const SocketServer = () => {
   return (
     <Server listen port={5432}>
-      <Connection onConnection={(socket) => socket.join("game")} />
-      <Room room="game">
-        <Game />
-      </Room>
+      <Game />
+      <On event="score" handler={() => console.log("someone score")} />
     </Server>
   );
 };
+
+export default SocketServer;
