@@ -3,6 +3,8 @@
   "version": "0.0.2",
   "private": true,
   "dependencies": {
+    "@react-fullstack/demo-interfaces": "0.0.2",
+    "@react-fullstack/fullstack": "0.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "socket.io-client": "2.3.0"
@@ -15,9 +17,9 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
+    "@types/socket.io-client": "1.4.32",
     "react-scripts": "3.4.3",
-    "typescript": "~3.7.2",
-    "@types/socket.io-client": "1.4.32"
+    "typescript": "~3.7.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -39,5 +41,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "peerDependencies": {
+    "react": "^16.13.1"
   }
 }

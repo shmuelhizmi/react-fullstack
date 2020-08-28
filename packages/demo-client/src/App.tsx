@@ -1,31 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { connect } from "socket.io-client";
-
-const server = connect("http://localhost:5432");
+import React from "react";
+import { Client } from "@react-fullstack/fullstack";
+import { Views } from "@react-fullstack/demo-interfaces";
+import * as Components from "./components";
 
 function App() {
-  const [scores, setScores] = useState<Record<string, number>>({});
-  useEffect(() => {
-    server.on("scores", (newScores: Record<string, number>) => {
-      console.log(newScores);
-      setScores(newScores);
-    });
-    return () => {
-      server.disconnect();
-    };
-  }, []);
-  return (
-    <div className="App">
-      <ol>
-        {Object.keys(scores).map((name) => (
-          <li>
-            {name} : {scores[name]}
-          </li>
-        ))}
-      </ol>
-      <button onClick={() => server.emit("score", 10)} >score</button>
-    </div>
-  );
+  return <Client<typeof Views> host="loclhost" port={5454} views={Components} />;
 }
 
 export default App;
