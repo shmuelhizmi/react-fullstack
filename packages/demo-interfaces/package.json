@@ -1,21 +1,19 @@
 {
-  "name": "@react-fullstack/server-express",
+  "name": "@react-fullstack/demo-interfaces",
   "version": "0.0.2",
-  "description": "create node express servers using react!",
+  "description": "run your react app logic on the server - demo client",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build"
   },
   "peerDependencies": {
-    "express": ">=4.0.0",
     "react": ">=16.0.0"
   },
   "dependencies": {
-    "react-reconciler": "0.25.1"
+    "@react-fullstack/fullstack": "0.0.2"
   },
   "devDependencies": {
-    "@types/express": "4.11.1",
     "@types/react": "16.8.24",
     "typescript": "3.9.7"
   },

@@ -3,7 +3,7 @@ import { v4 } from "uuid";
 import { Render } from "@react-fullstack/render";
 import { Views, ViewsToServerComponents } from "./Views";
 import ViewComponent from "./component/ViewComponent";
-import SocketIO from "socket.io";
+import type SocketIO from "socket.io";
 
 interface AppParameters<ViewsInterface extends Views> {
   reactTree: () => JSX.Element;

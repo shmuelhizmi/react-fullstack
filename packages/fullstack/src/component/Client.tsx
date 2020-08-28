@@ -1,5 +1,4 @@
 import React from "react";
-import Socket from "socket.io-client";
 import { v4 } from "uuid";
 import { Views, ViewsToComponents } from "../Views";
 import { ShareableViewData } from "../App";
@@ -12,7 +11,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
   },
   { runningViews: ShareableViewData[] }
 > {
-  socket = Socket({ host: this.props.host, port: String(this.props.port) });
+  socket = require("socket.io-client")({ host: this.props.host, port: String(this.props.port) });
   componentDidMount() {
     this.socket.on(
       "update_views_tree",

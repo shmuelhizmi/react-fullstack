@@ -1,5 +1,5 @@
 import React from "react";
-import SocketIO from "socket.io";
+import type SocketIO from "socket.io";
 import { Views } from "../Views";
 import App from "../App";
 
@@ -14,7 +14,7 @@ class Server<ViewsInterface extends Views> extends React.Component<
 > {
   server?: SocketIO.Server;
   componentDidMount = () => {
-    this.server = SocketIO();
+    this.server = require("socket.io")() as SocketIO.Server;
     this.server.listen(this.props.port);
     this.server.on("connection", (socket) => {
       const app = new App({
