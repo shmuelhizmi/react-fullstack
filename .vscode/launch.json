@@ -10,7 +10,9 @@
 			"request": "launch",
 			"runtimeExecutable": "node",
 			"runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
-	  
+			"env": {
+				"NODE_PRESERVE_SYMLINKS": "1"
+			},
 			"args": ["src/index.tsx"],
 	  
 			"cwd": "${workspaceRoot}/packages/demo/",
