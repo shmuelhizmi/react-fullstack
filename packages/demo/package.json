@@ -14,7 +14,6 @@
     "@react-fullstack/plugin-server-side-rendring": "^0.1.2",
     "@react-fullstack/render": "^0.1.2",
     "@react-fullstack/server-express": "^0.1.2",
-    "@react-fullstack/server-socket": "^0.1.2",
     "express": "^4.17.1",
     "react": "^16.13.1",
     "socket.io": "2.3.0"
