@@ -3,6 +3,7 @@
   "version": "0.0.2",
   "description": "run your react app logic on the server - demo client",
   "main": "lib/index.js",
+  "private": true,
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build"

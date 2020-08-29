@@ -3,6 +3,7 @@
   "version": "0.0.2",
   "description": "a demo react express server built on @react-fullstack/server",
   "main": "src/index.ts",
+  "private": true,
   "scripts": {
     "start": "NODE_PRESERVE_SYMLINKS=1 ts-node src",
     "build": "tsc"
