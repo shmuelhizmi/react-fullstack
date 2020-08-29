@@ -7,14 +7,13 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/@react-fullstack/fullstack"><img alt="NPM Version" src="https://img.shields.io/npm/v/@react-fullstack/fullstack?style=for-the-badge"></a>
   <a href="https://www.npmjs.com/package/@react-fullstack/fullstack"><img alt="NPM Downloads" src="https://img.shields.io/npm/dt/@react-fullstack/fullstack?style=for-the-badge"></a>
-  <a href="https://www.npmjs.com/package/@react-fullstack/fullstack"><img alt="Node Verison" src="https://img.shields.io/node/v/@react-fullstack/fullstack?style=for-the-badge"></a>
 </p>
 
-React-Fullstack is react framework for buiding React applications with there layout/ui components running on the client and with connections between and business logic running on the server.
+React-Fullstack is react framework for buiding React applications with there layout/ui components running on the client and with the connections between and business logic running on the server.
 
 # Getting Started - TypeScript
 
-a "React-Fullstack" is usually made up from three different packages
+a "React-Fullstack" app is usually made up from three different packages
 
 - a server package - for the server
 - a client package - for the client react app
