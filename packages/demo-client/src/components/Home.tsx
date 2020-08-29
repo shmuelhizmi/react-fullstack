@@ -7,6 +7,7 @@ class Home extends Component<typeof Views["Home"]> {
     return (
       <div>
         <h1>Hello - {this.props.username}</h1>
+        {this.props.children}
         <button onClick={() => this.props.logout()}>logout</button>
       </div>
     );

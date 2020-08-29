@@ -1,6 +1,7 @@
 import React from "react";
 import { v4 } from "uuid";
-import App, { AppContext } from "../App";
+import App from "../App";
+import { AppContext } from "../Contexts";
 
 const ViewParentContext = React.createContext<
   { uid: string; childIndex: number } | undefined
@@ -12,15 +13,21 @@ class ViewComponent<Props extends { name: string }> extends React.Component<
   static contextType = AppContext;
   declare context: App<any>;
   private uid = v4();
+  private mountState: "premounted" | "mounted" | "unmounted" = "premounted";
+  componentDidMount() {
+    this.mountState = "mounted";
+    this.forceUpdate();
+  }
   componentWillUnmount() {
+    this.mountState = "unmounted";
     this.context.deleteRunningView(this.uid);
   }
   render() {
     return (
       <AppContext.Consumer>
         {(app) => {
-          if (!app) {
-            return;
+          if (!app || this.mountState !== "mounted") {
+            return <> </>;
           }
           return (
             <ViewParentContext.Consumer>
@@ -36,6 +43,7 @@ class ViewComponent<Props extends { name: string }> extends React.Component<
                 if (Array.isArray(this.props.children)) {
                   return this.props.children.map((child, index) => (
                     <ViewParentContext.Provider
+                      key={index}
                       value={{ uid: this.uid, childIndex: index }}
                     >
                       {child}

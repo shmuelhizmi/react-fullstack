@@ -3,7 +3,8 @@ import Component from "./component/Component"
 import Client from "./component/Client"
 
 export { View, ViewsToComponents } from "./Views"
-export { AppContext, ViewsProvider } from "./App"
+export { ViewsProvider } from "./App"
+export { AppContext } from "./Contexts"
 export {
 	Server,
 	Component,

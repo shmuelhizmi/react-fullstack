@@ -4,7 +4,7 @@ import { Views } from "@react-fullstack/demo-interfaces";
 import * as Components from "./components";
 
 function App() {
-  return <Client<typeof Views> host="loclhost" port={5454} views={Components} />;
+  return <Client<typeof Views> host="localhost" port={8485} views={Components} />;
 }
 
 export default App;

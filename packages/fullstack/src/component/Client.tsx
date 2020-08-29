@@ -2,6 +2,11 @@ import React from "react";
 import { v4 } from "uuid";
 import { Views, ViewsToComponents } from "../Views";
 import { ShareableViewData } from "../App";
+import type Socket from "socket.io-client";
+
+interface ClientState {
+  runningViews: ShareableViewData[];
+}
 
 class Client<ViewsInterface extends Views> extends React.Component<
   {
@@ -9,9 +14,10 @@ class Client<ViewsInterface extends Views> extends React.Component<
     port: number;
     views: ViewsToComponents<ViewsInterface>;
   },
-  { runningViews: ShareableViewData[] }
+  ClientState
 > {
-  socket = require("socket.io-client")({ host: this.props.host, port: String(this.props.port) });
+  state: ClientState = { runningViews: [] };
+  socket = (require("socket.io-client") as typeof Socket)(`${this.props.host}:${this.props.port}`);
   componentDidMount() {
     this.socket.on(
       "update_views_tree",
@@ -22,14 +28,14 @@ class Client<ViewsInterface extends Views> extends React.Component<
     this.socket.on("update_view", ({ view }: { view: ShareableViewData }) => {
       this.setState((state) => {
         const runningViewIndex = state.runningViews.findIndex(
-          (view) => view.uid === view.uid
+          (currentView) => currentView.uid === view.uid
         );
         if (runningViewIndex !== -1) {
           state.runningViews[runningViewIndex] = view;
         } else {
           state.runningViews.push(view);
         }
-        return { runningViews: state.runningViews };
+        return { runningViews: [...state.runningViews] };
       });
     });
     this.socket.on("delete_view", ({ viewUid }: { viewUid: string }) => {
@@ -37,15 +43,17 @@ class Client<ViewsInterface extends Views> extends React.Component<
         const runningViewIndex = state.runningViews.findIndex(
           (view) => view.uid === viewUid
         );
-        state.runningViews.splice(runningViewIndex, 1);
-        return { runningViews: state.runningViews };
+        if (runningViewIndex !== -1) {
+          state.runningViews.splice(runningViewIndex, 1);
+          return { runningViews: [...state.runningViews] };
+        }
       });
     });
     this.socket.emit("request_views_tree");
   }
   renderView(view: ShareableViewData): JSX.Element {
     const componentToRender = this.props.views[view.name];
-    const props: any = {};
+    const props: any = { key: view.uid };
     view.props.forEach((prop) => {
       if (prop.type === "data") {
         props[prop.name] = prop.data;
@@ -91,8 +99,8 @@ class Client<ViewsInterface extends Views> extends React.Component<
     const root = this.state.runningViews.find((view) => view.isRoot);
     if (!root) {
       return <></>;
-	}
-	return this.renderView(root);
+    }
+    return this.renderView(root);
   }
 }
 

@@ -1,49 +1,52 @@
 import React, { useState } from "react";
-import { Server, ViewsProvider } from "@react-fullstack/fullstack";
+import { ViewsProvider, Server } from "@react-fullstack/fullstack";
 import { Views } from "@react-fullstack/demo-interfaces";
 
 const App = () => {
   const [location, setLocation] = useState<"home" | "error" | "login">("login");
   const [name, setName] = useState("");
   return (
-    <Server port={5454} views={Views}>
-      {() => (
-        <ViewsProvider<typeof Views>>
-          {({ Home, Login, Prompt }) => {
-            switch (location) {
-              case "home": {
-                return (
-                  <Home logout={() => setLocation("login")} username={name} />
-                );
-              }
-              case "login": {
-                return (
-                  <Login
-                    login={(username, password) => {
-                      if (password === "0000") {
-                        setName(username);
-                        setLocation("home");
-                      } else {
-                        setLocation("error");
-                      }
-                    }}
-                  />
-                );
-              }
-              case "error": {
-                return (
-                  <Prompt
-                    message={"worng password"}
-                    onOk={() => setLocation("login")}
-                  />
-                );
-              }
-            }
-          }}
-        </ViewsProvider>
-      )}
-    </Server>
+    <ViewsProvider<typeof Views>>
+      {({ Home, Login, Prompt, Gif }) => {
+        return (
+          <>
+            {location === "home" && (
+              <Home logout={() => setLocation("login")} username={name}>
+                <Gif url="https://upload.wikimedia.org/wikipedia/commons/7/78/GRACE_globe_animation.gif" />
+                <Gif url="https://upload.wikimedia.org/wikipedia/commons/7/78/GRACE_globe_animation.gif" />
+              </Home>
+            )}
+            {location === "login" && (
+              <Login
+                login={(username, password) => {
+                  if (password === "0000") {
+                    setName(username);
+                    setLocation("home");
+                  } else {
+                    setLocation("error");
+                  }
+                }}
+              />
+            )}
+            {location === "error" && (
+              <Prompt
+                message={"worng password"}
+                onOk={() => setLocation("login")}
+              >
+                <Gif url="https://upload.wikimedia.org/wikipedia/commons/7/78/GRACE_globe_animation.gif" />
+              </Prompt>
+            )}
+          </>
+        );
+      }}
+    </ViewsProvider>
   );
 };
 
-export default App;
+const ServerApp = () => (
+  <Server port={8485} views={Views}>
+    {() => <App />}
+  </Server>
+);
+
+export default ServerApp;

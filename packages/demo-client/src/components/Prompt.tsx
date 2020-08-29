@@ -7,6 +7,7 @@ class Prompt extends Component<typeof Views["Prompt"]> {
     return (
       <div>
         <h1>{this.props.message}</h1>
+        {this.props.children}
         <button onClick={() => this.props.onOk()}>ok</button>
       </div>
     );

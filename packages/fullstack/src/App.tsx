@@ -4,14 +4,13 @@ import { Render } from "@react-fullstack/render";
 import { Views, ViewsToServerComponents } from "./Views";
 import ViewComponent from "./component/ViewComponent";
 import type SocketIO from "socket.io";
+import { AppContext } from "./Contexts";
 
 interface AppParameters<ViewsInterface extends Views> {
   reactTree: () => JSX.Element;
   socket: SocketIO.Socket;
   views: ViewsInterface;
 }
-
-export const AppContext = React.createContext<App<any> | undefined>(undefined);
 
 const getAppContext = <ViewsInterface extends Views>() => {
   const Type = React.createContext<App<ViewsInterface> | undefined>(undefined);
@@ -111,16 +110,18 @@ class App<ViewsInterface extends Views> {
       this.runningViews[runningViewIndex] = viewData;
     } else {
       this.runningViews.push(viewData);
-      this.socket.emit("update_view", this.parseViewData(viewData));
     }
+    this.socket.emit("update_view", { view: this.parseViewData(viewData) });
   }
-  public deleteRunningView(uid: string) {
+  public deleteRunningView = (uid: string) => {
     const runningViewIndex = this.runningViews.findIndex(
       (view) => view.uid === uid
     );
-    this.runningViews.splice(runningViewIndex, 1);
-    this.socket.emit("delete_view", { viewUid: uid });
-  }
+    if (runningViewIndex !== -1) {
+      this.runningViews.splice(runningViewIndex, 1);
+      this.socket.emit("delete_view", { viewUid: uid });
+    }
+  };
   private registerViewEvent(
     event: (...args: any) => any | Promise<any>,
     viewUid: string
@@ -148,14 +149,14 @@ class App<ViewsInterface extends Views> {
           if (eventResult instanceof Promise) {
             eventResult.then((result) => {
               this.socket.emit(`respond_to_event`, {
-                data: JSON.parse(JSON.stringify(result)),
+                data: result && JSON.parse(JSON.stringify(result)),
                 uid: currentEventUid,
                 eventUid,
               });
             });
           } else {
             this.socket.emit(`respond_to_event`, {
-              data: JSON.parse(JSON.stringify(eventResult)),
+              data: eventResult && JSON.parse(JSON.stringify(eventResult)),
               uid: currentEventUid,
               eventUid,
             });
@@ -167,7 +168,7 @@ class App<ViewsInterface extends Views> {
   }
   private parseViewData(viewData: ViewData): ShareableViewData {
     const { childIndex, isRoot, name, parentUid, uid } = viewData;
-    const props = Object.keys(viewData.props).map((name) => {
+    const props = Object.keys(viewData.props).filter((name) => !["children", "key"].includes(name)).map((name) => {
       const prop = viewData.props[name];
       if (typeof prop === "function") {
         return {

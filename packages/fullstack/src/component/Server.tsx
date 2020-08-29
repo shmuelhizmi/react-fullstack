@@ -14,8 +14,8 @@ class Server<ViewsInterface extends Views> extends React.Component<
 > {
   server?: SocketIO.Server;
   componentDidMount = () => {
-    this.server = require("socket.io")() as SocketIO.Server;
-    this.server.listen(this.props.port);
+    this.server = require("socket.io")(this.props.port) as SocketIO.Server;
+    
     this.server.on("connection", (socket) => {
       const app = new App({
         reactTree: this.props.children,

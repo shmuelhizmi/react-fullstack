@@ -16,10 +16,7 @@
     "@react-fullstack/server-express": "^0.0.2",
     "@react-fullstack/server-socket": "^0.0.2",
     "@react-fullstack/render": "^0.0.2",
-    "@react-fullstack/plugin-server-side-rendring": "^0.0.2",
-    "express": "4.17.1",
-    "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "@react-fullstack/plugin-server-side-rendring": "^0.0.2"
   },
   "devDependencies": {
     "@types/express": "4.11.1",
