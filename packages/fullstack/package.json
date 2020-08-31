@@ -9,9 +9,7 @@
   },
   "peerDependencies": {
     "@react-fullstack/render": ">=0.0.2",
-    "react": ">=16.0.0",
-    "socket.io": ">=2.3.0",
-    "socket.io-client": ">=2.3.0"
+    "react": ">=16.0.0"
   },
   "dependencies": {
     "socket.io-client": "2.3.0",
@@ -19,10 +17,9 @@
   },
   "devDependencies": {
     "@types/react": "16.8.24",
-    "@types/socket.io": "1.4.33",
-    "@types/socket.io-client": "1.4.32",
     "@types/uuid": "3.4.3",
-    "typescript": "3.9.7"
+    "typescript": "3.9.7",
+    "@react-fullstack/render": "0.1.2"
   },
   "keywords": [
     "react",

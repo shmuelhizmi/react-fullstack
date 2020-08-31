@@ -3,12 +3,12 @@ import { v4 } from "uuid";
 import { Render } from "@react-fullstack/render";
 import { Views, ViewsToServerComponents } from "./Views";
 import ViewComponent from "./component/ViewComponent";
-import type SocketIO from "socket.io";
 import { AppContext } from "./Contexts";
+import { Transport } from "./component/Client";
 
 interface AppParameters<ViewsInterface extends Views> {
   reactTree: () => JSX.Element;
-  socket: SocketIO.Socket;
+  transport: Transport;
   views: ViewsInterface;
 }
 
@@ -63,12 +63,12 @@ export type ShareableViewData = ViewDataBase & {
 
 class App<ViewsInterface extends Views> {
   private reactTree: () => JSX.Element;
-  private socket: SocketIO.Socket;
+  private transport: Transport;
   private views: ViewsInterface;
   private runningViews: ViewData[] = [];
   constructor(params: AppParameters<ViewsInterface>) {
     this.reactTree = params.reactTree;
-    this.socket = params.socket;
+    this.transport = params.transport;
     this.views = params.views;
   }
   public Context = getAppContext<ViewsInterface>();
@@ -81,8 +81,8 @@ class App<ViewsInterface extends Views> {
     );
   }
   private registerSocketListener() {
-    this.socket.on("request_views_tree", () => {
-      this.socket.emit("update_views_tree", {
+    this.transport.on("request_views_tree", () => {
+      this.transport.emit("update_views_tree", {
         views: this.runningViews.map((runningView) =>
           this.parseViewData(runningView)
         ),
@@ -111,7 +111,7 @@ class App<ViewsInterface extends Views> {
     } else {
       this.runningViews.push(viewData);
     }
-    this.socket.emit("update_view", { view: this.parseViewData(viewData) });
+    this.transport.emit("update_view", { view: this.parseViewData(viewData) });
   }
   public deleteRunningView = (uid: string) => {
     const runningViewIndex = this.runningViews.findIndex(
@@ -119,7 +119,7 @@ class App<ViewsInterface extends Views> {
     );
     if (runningViewIndex !== -1) {
       this.runningViews.splice(runningViewIndex, 1);
-      this.socket.emit("delete_view", { viewUid: uid });
+      this.transport.emit("delete_view", { viewUid: uid });
     }
   };
   private registerViewEvent(
@@ -127,7 +127,7 @@ class App<ViewsInterface extends Views> {
     viewUid: string
   ): string {
     const eventUid = v4();
-    this.socket.on(
+    this.transport.on(
       `request_event`,
       ({
         eventArguments,
@@ -148,14 +148,14 @@ class App<ViewsInterface extends Views> {
           const eventResult = event(...eventArguments);
           if (eventResult instanceof Promise) {
             eventResult.then((result) => {
-              this.socket.emit(`respond_to_event`, {
+              this.transport.emit(`respond_to_event`, {
                 data: result && JSON.parse(JSON.stringify(result)),
                 uid: currentEventUid,
                 eventUid,
               });
             });
           } else {
-            this.socket.emit(`respond_to_event`, {
+            this.transport.emit(`respond_to_event`, {
               data: eventResult && JSON.parse(JSON.stringify(eventResult)),
               uid: currentEventUid,
               eventUid,

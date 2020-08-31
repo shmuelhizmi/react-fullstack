@@ -1,7 +1,9 @@
 import React from "react";
-import type SocketIO from "socket.io";
-import { Views } from "../Views";
-import App from "../App";
+// @ts-ignore
+import { Views } from "@react-fullstack/fullstack/lib/Views";
+// @ts-ignore
+import App from "@react-fullstack/fullstack/lib/App";
+import SocketIO from "socket.io";
 
 interface Props<ViewsInterface extends Views> {
   port: number;
@@ -14,12 +16,12 @@ class Server<ViewsInterface extends Views> extends React.Component<
 > {
   server?: SocketIO.Server;
   componentDidMount = () => {
-    this.server = require("socket.io")(this.props.port) as SocketIO.Server;
-    
+    this.server = SocketIO(this.props.port);
+
     this.server.on("connection", (socket) => {
       const app = new App({
         reactTree: this.props.children,
-        socket,
+        transport: socket,
         views: this.props.views,
       });
       app.start();
@@ -28,4 +30,4 @@ class Server<ViewsInterface extends Views> extends React.Component<
   render = () => <></>;
 }
 
-export default Server;
+export { Server };

@@ -11,6 +11,7 @@
   "dependencies": {
     "@react-fullstack/demo-interfaces": "^0.1.4",
     "@react-fullstack/fullstack": "^0.1.4",
+    "@react-fullstack/fullstack-socket-server": "^0.1.4",
     "@react-fullstack/plugin-server-side-rendring": "^0.1.2",
     "@react-fullstack/render": "^0.1.2",
     "@react-fullstack/server-express": "^0.1.2",
@@ -33,6 +34,7 @@
   "author": "shmuelhizmi",
   "license": "MIT",
   "peerDependencies": {
+    "@react-fullstack/fullstack": "^0.1.4",
     "react": "^16.13.1"
   }
 }

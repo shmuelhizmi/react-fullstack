@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { ViewsProvider, Server } from "@react-fullstack/fullstack";
+import { ViewsProvider } from "@react-fullstack/fullstack";
 import { Views } from "@react-fullstack/demo-interfaces";
+import { Server } from "@react-fullstack/fullstack-socket-server";
 
 const App = () => {
   const [location, setLocation] = useState<"home" | "error" | "login">("login");
@@ -44,7 +45,7 @@ const App = () => {
 };
 
 const ServerApp = () => (
-  <Server port={8485} views={Views}>
+  <Server port={8585} views={Views}>
     {() => <App />}
   </Server>
 );

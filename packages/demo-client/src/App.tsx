@@ -1,10 +1,12 @@
 import React from "react";
-import { Client } from "@react-fullstack/fullstack";
 import { Views } from "@react-fullstack/demo-interfaces";
+import { Client } from "@react-fullstack/fullstack-socket-client";
 import * as Components from "./components";
 
 function App() {
-  return <Client<typeof Views> host="localhost" port={8485} views={Components} />;
+  return (
+    <Client<typeof Views> host="localhost" port={8585} views={Components} />
+  );
 }
 
 export default App;

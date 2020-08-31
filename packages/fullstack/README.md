@@ -42,8 +42,10 @@ next after we finished declaring all of our client components in our shared pack
 // server/src/index
 
 import { Render } from "@react-fullstack/render";
-import { ViewsProvider, Server } from "@react-fullstack/fullstack";
+import { ViewsProvider } from "@react-fullstack/fullstack";
 import { Views } from "shared-package"; // import our shared package
+import { Server } from "@react-fullstack/fullstack-socket-server";
+
 
 const App = () => {
   const [location, setLocation] = useState<"home" | "error" | "login">("login"); // example state for the current layout
@@ -104,7 +106,8 @@ after we finished adding all of our business logic to the server its now time to
 
 import React from "react";
 import ReactDOM from "react-dom";
-import { Client, Component } from "@react-fullstack/fullstack";
+import { Component } from "@react-fullstack/fullstack";
+import { Client } from '@react-fullstack/fullstack-socket-client'
 import { Views } from "@react-fullstack/demo-interfaces";
 
 // home layout component
@@ -184,13 +187,5 @@ ReactDOM.render(
   document.getElementById("root")
 );
 ```
-
-Client Note: Please add
-```
-externals: {
-      "socket.io": "socket.io"
-    }
-```
-to the webpack.config.js webpack configuration file to avoid client compilation erros
 
 and we are now finished you should now have a react application the can run on a server : )

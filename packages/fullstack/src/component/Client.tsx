@@ -2,30 +2,34 @@ import React from "react";
 import { v4 } from "uuid";
 import { Views, ViewsToComponents } from "../Views";
 import { ShareableViewData } from "../App";
-import type Socket from "socket.io-client";
 
 interface ClientState {
   runningViews: ShareableViewData[];
 }
 
+export interface Transport {
+  emit: (event: string, message?: any) => void;
+  on: (event: string, handler: (...args: any) => void) => void;
+}
+
 class Client<ViewsInterface extends Views> extends React.Component<
   {
-    host: string;
-    port: number;
+    transport: Transport;
     views: ViewsToComponents<ViewsInterface>;
   },
   ClientState
 > {
-  state: ClientState = { runningViews: [] };
-  socket = (require("socket.io-client") as typeof Socket)(`${this.props.host}:${this.props.port}`);
+  state: ClientState = {
+    runningViews: [],
+  }
   componentDidMount() {
-    this.socket.on(
+    this.props.transport.on(
       "update_views_tree",
       ({ views }: { views: ShareableViewData[] }) => {
         this.setState({ runningViews: views });
       }
     );
-    this.socket.on("update_view", ({ view }: { view: ShareableViewData }) => {
+    this.props.transport.on("update_view", ({ view }: { view: ShareableViewData }) => {
       this.setState((state) => {
         const runningViewIndex = state.runningViews.findIndex(
           (currentView) => currentView.uid === view.uid
@@ -38,7 +42,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
         return { runningViews: [...state.runningViews] };
       });
     });
-    this.socket.on("delete_view", ({ viewUid }: { viewUid: string }) => {
+    this.props.transport.on("delete_view", ({ viewUid }: { viewUid: string }) => {
       this.setState((state) => {
         const runningViewIndex = state.runningViews.findIndex(
           (view) => view.uid === viewUid
@@ -49,7 +53,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
         }
       });
     });
-    this.socket.emit("request_views_tree");
+    this.props.transport.emit("request_views_tree");
   }
   renderView(view: ShareableViewData): JSX.Element {
     const componentToRender = this.props.views[view.name];
@@ -62,7 +66,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
           (props[prop.name] = (...args: any) => {
             return new Promise((resolve) => {
               const requestUid = v4();
-              this.socket.on(
+              this.props.transport.on(
                 "respond_to_event",
                 ({
                   data,
@@ -78,7 +82,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
                   }
                 }
               );
-              this.socket.emit("request_event", {
+              this.props.transport.emit("request_event", {
                 eventArguments: JSON.parse(JSON.stringify(args)),
                 eventUid: prop.uid,
                 uid: requestUid,
