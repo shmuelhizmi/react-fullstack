@@ -40,7 +40,7 @@ next after we finished declaring all of our client components in our shared pack
 
 ```tsx
 // server/src/index
-
+import React from "react";
 import { Render } from "@react-fullstack/render";
 import { ViewsProvider } from "@react-fullstack/fullstack";
 import { Views } from "shared-package"; // import our shared package
@@ -107,8 +107,8 @@ after we finished adding all of our business logic to the server its now time to
 import React from "react";
 import ReactDOM from "react-dom";
 import { Component } from "@react-fullstack/fullstack";
-import { Client } from '@react-fullstack/fullstack-socket-client'
-import { Views } from "@react-fullstack/demo-interfaces";
+import { Client } from "@react-fullstack/fullstack-socket-client"
+import { Views } from "shared-package";
 
 // home layout component
 class Home extends Component<typeof Views["Home"]> {
