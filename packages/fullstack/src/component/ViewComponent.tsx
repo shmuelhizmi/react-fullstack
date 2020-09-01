@@ -7,7 +7,7 @@ const ViewParentContext = React.createContext<
   { uid: string; childIndex: number } | undefined
 >(undefined);
 
-class ViewComponent<Props extends { name: string }> extends React.Component<
+class ViewComponent<Props extends { name: string, props: any }> extends React.Component<
   Props
 > {
   static contextType = AppContext;
@@ -37,7 +37,7 @@ class ViewComponent<Props extends { name: string }> extends React.Component<
                   isRoot: parent === undefined,
                   childIndex: parent?.childIndex || 0,
                   name: this.props.name,
-                  props: this.props,
+                  props: this.props.props,
                   uid: this.uid,
                 });
                 if (Array.isArray(this.props.children)) {
