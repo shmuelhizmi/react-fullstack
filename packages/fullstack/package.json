@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/fullstack",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "run your react app logic on the server",
   "main": "lib/index.js",
   "scripts": {
