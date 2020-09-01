@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/fullstack-socket-server",
-  "version": "0.1.6",
+  "version": "0.1.6-alpha.0",
   "description": "create node express servers using react! - socket server",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
