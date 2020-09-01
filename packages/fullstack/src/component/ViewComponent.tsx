@@ -41,7 +41,7 @@ class ViewComponent<Props extends { name: string, props: any }> extends React.Co
                   uid: this.uid,
                 });
                 if (Array.isArray(this.props.children)) {
-                  return this.props.children.map((child, index) => (
+                  return (this.props.props.children as JSX.Element[]).map((child, index) => (
                     <ViewParentContext.Provider
                       key={index}
                       value={{ uid: this.uid, childIndex: index }}
@@ -54,7 +54,7 @@ class ViewComponent<Props extends { name: string, props: any }> extends React.Co
                     <ViewParentContext.Provider
                       value={{ uid: this.uid, childIndex: 0 }}
                     >
-                      {this.props.children}
+                      {this.props.props.children}
                     </ViewParentContext.Provider>
                   );
                 }
