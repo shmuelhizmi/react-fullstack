@@ -3,6 +3,7 @@
   "version": "0.1.5",
   "description": "create node express servers using react! - socket server",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build"
