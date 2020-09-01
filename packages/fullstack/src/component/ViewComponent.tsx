@@ -7,9 +7,9 @@ const ViewParentContext = React.createContext<
   { uid: string; childIndex: number } | undefined
 >(undefined);
 
-class ViewComponent<Props extends { name: string, props: any }> extends React.Component<
-  Props
-> {
+class ViewComponent<
+  Props extends { name: string; props: any }
+> extends React.Component<Props> {
   static contextType = AppContext;
   declare context: App<any>;
   private uid = v4();
@@ -41,14 +41,16 @@ class ViewComponent<Props extends { name: string, props: any }> extends React.Co
                   uid: this.uid,
                 });
                 if (Array.isArray(this.props.children)) {
-                  return (this.props.props.children as JSX.Element[]).map((child, index) => (
-                    <ViewParentContext.Provider
-                      key={index}
-                      value={{ uid: this.uid, childIndex: index }}
-                    >
-                      {child}
-                    </ViewParentContext.Provider>
-                  ));
+                  return (this.props.props.children as JSX.Element[]).map(
+                    (child, index) => (
+                      <ViewParentContext.Provider
+                        key={index}
+                        value={{ uid: this.uid, childIndex: index }}
+                      >
+                        {child}
+                      </ViewParentContext.Provider>
+                    )
+                  );
                 } else {
                   return (
                     <ViewParentContext.Provider
