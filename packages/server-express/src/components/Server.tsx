@@ -55,6 +55,10 @@ class Server extends React.Component<ServerProps> {
     return false;
   };
 
+  componentWillUnmount = () => {
+    if (this.server) this.server.close();
+  }
+
   render() {
     return (
       <ApplicationContext.Provider value={this.app}>

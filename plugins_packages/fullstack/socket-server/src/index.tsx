@@ -39,9 +39,11 @@ class Server<ViewsInterface extends Views> extends React.Component<
         app.startServer(socket);
         app.addClient(socket);
       });
-
     }
   };
+  componentWillUnmount = () => {
+    if (this.server) this.server.close();
+  }
   render = () => <></>;
 }
 
