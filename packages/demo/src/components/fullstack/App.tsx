@@ -45,7 +45,7 @@ const App = () => {
 };
 
 const ServerApp = () => (
-  <Server port={8585} views={Views}>
+  <Server port={8585} views={Views} singleInstance>
     {() => <App />}
   </Server>
 );

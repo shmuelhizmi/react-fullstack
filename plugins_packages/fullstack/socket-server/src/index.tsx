@@ -1,14 +1,16 @@
 import React from "react";
 // @ts-ignore
-import { Views } from "@react-fullstack/fullstack/lib/Views";
-// @ts-ignore
-import App from "@react-fullstack/fullstack/lib/App";
+import { App, Views } from "@react-fullstack/fullstack";
 import SocketIO from "socket.io";
 
 interface Props<ViewsInterface extends Views> {
   port: number;
   children: () => JSX.Element;
   views: ViewsInterface;
+  /**
+   * share one app across all clients
+   */
+  singleInstance?: boolean;
 }
 
 class Server<ViewsInterface extends Views> extends React.Component<
@@ -18,14 +20,27 @@ class Server<ViewsInterface extends Views> extends React.Component<
   componentDidMount = () => {
     this.server = SocketIO(this.props.port);
 
-    this.server.on("connection", (socket) => {
+    if (this.props.singleInstance) {
       const app = new App({
         reactTree: this.props.children,
-        transport: socket,
         views: this.props.views,
       });
-      app.start();
-    });
+      app.startServer(this.server);
+      this.server.on("connection", (socket) => {
+        app.addClient(socket);
+      });
+
+    } else {
+      this.server.on("connection", (socket) => {
+        const app = new App({
+          reactTree: this.props.children,
+          views: this.props.views,
+        });
+        app.startServer(socket);
+        app.addClient(socket);
+      });
+
+    }
   };
   render = () => <></>;
 }

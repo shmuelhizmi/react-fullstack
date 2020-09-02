@@ -8,7 +8,6 @@ import { Transport } from "./component/Client";
 
 interface AppParameters<ViewsInterface extends Views> {
   reactTree: () => JSX.Element;
-  transport: Transport;
   views: ViewsInterface;
 }
 
@@ -63,26 +62,30 @@ export type ShareableViewData = ViewDataBase & {
 
 class App<ViewsInterface extends Views> {
   private reactTree: () => JSX.Element;
-  private transport: Transport;
+  private server?: Transport;
+  private clients: Transport[] = [];
   private views: ViewsInterface;
   private runningViews: ViewData[] = [];
   constructor(params: AppParameters<ViewsInterface>) {
     this.reactTree = params.reactTree;
-    this.transport = params.transport;
     this.views = params.views;
   }
   public Context = getAppContext<ViewsInterface>();
-  public start() {
-    this.registerSocketListener();
+  public startServer(server: Transport) {
+    this.server = server;
     Render(
       <this.Context.Provider value={this}>
         {this.reactTree()}
       </this.Context.Provider>
     );
   }
-  private registerSocketListener() {
-    this.transport.on("request_views_tree", () => {
-      this.transport.emit("update_views_tree", {
+  public addClient(client: Transport) {
+    this.clients.push(client);
+    this.registerSocketListener(client);
+  }
+  private registerSocketListener(client: Transport) {
+    client.on("request_views_tree", () => {
+      client.emit("update_views_tree", {
         views: this.runningViews.map((runningView) =>
           this.parseViewData(runningView)
         ),
@@ -111,7 +114,10 @@ class App<ViewsInterface extends Views> {
     } else {
       this.runningViews.push(viewData);
     }
-    this.transport.emit("update_view", { view: this.parseViewData(viewData) });
+    if (!this.server) {
+      return;
+    }
+    this.server.emit("update_view", { view: this.parseViewData(viewData) });
   }
   public deleteRunningView = (uid: string) => {
     const runningViewIndex = this.runningViews.findIndex(
@@ -119,7 +125,10 @@ class App<ViewsInterface extends Views> {
     );
     if (runningViewIndex !== -1) {
       this.runningViews.splice(runningViewIndex, 1);
-      this.transport.emit("delete_view", { viewUid: uid });
+      if (!this.server) {
+        return;
+      }
+      this.server.emit("delete_view", { viewUid: uid });
     }
   };
   private registerViewEvent(
@@ -127,63 +136,67 @@ class App<ViewsInterface extends Views> {
     viewUid: string
   ): string {
     const eventUid = v4();
-    this.transport.on(
-      `request_event`,
-      ({
-        eventArguments,
-        eventUid: requestedEventUid,
-        uid: currentEventUid,
-      }: {
-        eventArguments: any[];
-        uid: string;
-        eventUid: string;
-      }) => {
-        if (requestedEventUid !== eventUid) {
-          return;
-        }
-        const stillExist = !!this.runningViews.find(
-          (view) => view.uid === viewUid
-        );
-        if (stillExist) {
-          const eventResult = event(...eventArguments);
-          if (eventResult instanceof Promise) {
-            eventResult.then((result) => {
-              this.transport.emit(`respond_to_event`, {
-                data: result && JSON.parse(JSON.stringify(result)),
+    this.clients.forEach((client) => {
+      client.on(
+        `request_event`,
+        ({
+          eventArguments,
+          eventUid: requestedEventUid,
+          uid: currentEventUid,
+        }: {
+          eventArguments: any[];
+          uid: string;
+          eventUid: string;
+        }) => {
+          if (requestedEventUid !== eventUid) {
+            return;
+          }
+          const stillExist = !!this.runningViews.find(
+            (view) => view.uid === viewUid
+          );
+          if (stillExist) {
+            const eventResult = event(...eventArguments);
+            if (eventResult instanceof Promise) {
+              eventResult.then((result) => {
+                client.emit(`respond_to_event`, {
+                  data: result && JSON.parse(JSON.stringify(result)),
+                  uid: currentEventUid,
+                  eventUid,
+                });
+              });
+            } else {
+              client.emit(`respond_to_event`, {
+                data: eventResult && JSON.parse(JSON.stringify(eventResult)),
                 uid: currentEventUid,
                 eventUid,
               });
-            });
-          } else {
-            this.transport.emit(`respond_to_event`, {
-              data: eventResult && JSON.parse(JSON.stringify(eventResult)),
-              uid: currentEventUid,
-              eventUid,
-            });
+            }
           }
         }
-      }
-    );
+      );
+    })
     return eventUid;
   }
   private parseViewData(viewData: ViewData): ShareableViewData {
     const { childIndex, isRoot, name, parentUid, uid } = viewData;
-    const props = Object.keys(viewData.props).filter((name) => !["children", "key"].includes(name)).map((name) => {
-      const prop = viewData.props[name];
-      if (typeof prop === "function") {
-        return {
-          name,
-          type: "event" as const,
-          uid: this.registerViewEvent(prop, uid),
-        };
-      } else {
-        return {
-          name,
-          type: "data" as const,
-          data: JSON.parse(JSON.stringify(prop)),
-        };
-      }
-    });
+    const props = Object.keys(viewData.props)
+      .filter((name) => !["children", "key"].includes(name))
+      .map((name) => {
+        const prop = viewData.props[name];
+        if (typeof prop === "function") {
+          return {
+            name,
+            type: "event" as const,
+            uid: this.registerViewEvent(prop, uid),
+          };
+        } else {
+          return {
+            name,
+            type: "data" as const,
+            data: JSON.parse(JSON.stringify(prop)),
+          };
+        }
+      });
     return {
       childIndex,
       isRoot,
