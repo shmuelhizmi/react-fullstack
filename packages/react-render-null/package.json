@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/render",
-  "version": "0.1.5",
+  "version": "0.1.11",
   "description": "render react tree to nothing!",
   "main": "lib/index.js",
   "scripts": {
