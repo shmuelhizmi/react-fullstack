@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/server-express",
-  "version": "0.1.5",
+  "version": "0.1.6-alpha.0",
   "description": "create node express servers using react!",
   "main": "lib/index.js",
   "scripts": {
@@ -8,7 +8,6 @@
     "prepare": "npm run build"
   },
   "peerDependencies": {
-    "@react-fullstack/fullstack": "^0.1.4",
     "express": ">=4.0.0",
     "react": ">=16.0.0"
   },

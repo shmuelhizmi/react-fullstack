@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDom from "react-dom/server";
+// @ts-ignore
 import { Route, Router, Middleware } from "@react-fullstack/server-express";
 import express, { RequestHandler, Request, Response, NextFunction } from "express";
 

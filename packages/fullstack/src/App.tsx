@@ -100,7 +100,7 @@ class App<ViewsInterface extends Views> {
     >;
     viewsNames.forEach((viewName) => {
       genaratedViews[viewName] = (((props: any) => (
-        <ViewComponent name={viewName} {...props} />
+        <ViewComponent name={viewName as string} props={props} />
       )) as unknown) as typeof genaratedViews[typeof viewName];
     });
     return genaratedViews;

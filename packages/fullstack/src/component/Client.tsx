@@ -21,7 +21,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
 > {
   state: ClientState = {
     runningViews: [],
-  }
+  };
   componentDidMount() {
     this.props.transport.on(
       "update_views_tree",
@@ -29,30 +29,36 @@ class Client<ViewsInterface extends Views> extends React.Component<
         this.setState({ runningViews: views });
       }
     );
-    this.props.transport.on("update_view", ({ view }: { view: ShareableViewData }) => {
-      this.setState((state) => {
-        const runningViewIndex = state.runningViews.findIndex(
-          (currentView) => currentView.uid === view.uid
-        );
-        if (runningViewIndex !== -1) {
-          state.runningViews[runningViewIndex] = view;
-        } else {
-          state.runningViews.push(view);
-        }
-        return { runningViews: [...state.runningViews] };
-      });
-    });
-    this.props.transport.on("delete_view", ({ viewUid }: { viewUid: string }) => {
-      this.setState((state) => {
-        const runningViewIndex = state.runningViews.findIndex(
-          (view) => view.uid === viewUid
-        );
-        if (runningViewIndex !== -1) {
-          state.runningViews.splice(runningViewIndex, 1);
+    this.props.transport.on(
+      "update_view",
+      ({ view }: { view: ShareableViewData }) => {
+        this.setState((state) => {
+          const runningViewIndex = state.runningViews.findIndex(
+            (currentView) => currentView.uid === view.uid
+          );
+          if (runningViewIndex !== -1) {
+            state.runningViews[runningViewIndex] = view;
+          } else {
+            state.runningViews.push(view);
+          }
           return { runningViews: [...state.runningViews] };
-        }
-      });
-    });
+        });
+      }
+    );
+    this.props.transport.on(
+      "delete_view",
+      ({ viewUid }: { viewUid: string }) => {
+        this.setState((state) => {
+          const runningViewIndex = state.runningViews.findIndex(
+            (view) => view.uid === viewUid
+          );
+          if (runningViewIndex !== -1) {
+            state.runningViews.splice(runningViewIndex, 1);
+            return { runningViews: [...state.runningViews] };
+          }
+        });
+      }
+    );
     this.props.transport.emit("request_views_tree");
   }
   renderView(view: ShareableViewData): JSX.Element {
@@ -91,12 +97,13 @@ class Client<ViewsInterface extends Views> extends React.Component<
           }),
         ];
     });
+    const children = this.state.runningViews
+      .filter((runningView) => runningView.parentUid === view.uid)
+      .sort((a, b) => a.childIndex - b.childIndex)
+      .map((runningView) => this.renderView(runningView));
     return React.createElement(componentToRender, {
       ...props,
-      children: this.state.runningViews
-        .filter((runningView) => runningView.parentUid === view.uid)
-        .sort((a, b) => a.childIndex - b.childIndex)
-        .map((runningView) => this.renderView(runningView)),
+      children: children.length > 0 ? children : undefined,
     });
   }
   render() {
