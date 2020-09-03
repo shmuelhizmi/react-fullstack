@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/render",
-  "version": "0.1.11",
+  "version": "0.1.16",
   "description": "render react tree to nothing!",
   "main": "lib/index.js",
   "scripts": {
@@ -12,13 +12,13 @@
     "react": ">=16.0.0"
   },
   "dependencies": {
+    "@nodegui/devtools": "1.0.1",
     "react-reconciler": "0.25.1",
-    "tiny-emitter": "2.1.0",
-    "@nodegui/devtools": "1.0.1"
+    "tiny-emitter": "2.1.0"
   },
   "devDependencies": {
-    "@types/react": "16.8.24",
     "@types/node": "12.12.2",
+    "@types/react": "16.8.24",
     "typescript": "3.9.7"
   },
   "keywords": [
