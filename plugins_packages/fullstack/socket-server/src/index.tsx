@@ -19,14 +19,15 @@ class Server<ViewsInterface extends Views> extends React.Component<
   server?: SocketIO.Server;
   componentDidMount = () => {
     this.server = SocketIO(this.props.port);
-
+    this.server.sockets.setMaxListeners(0);
     if (this.props.singleInstance) {
       const app = new App({
         reactTree: this.props.children,
         views: this.props.views,
       });
-      app.startServer(this.server);
+      app.startServer(this.server.sockets);
       this.server.on("connection", (socket) => {
+        socket.setMaxListeners(0);
         app.addClient(socket);
       });
 
