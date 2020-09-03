@@ -10,7 +10,7 @@ export type View<Props extends Record<string, any>> = {
 export type ViewsToComponents<ViewsToTransform extends Views> = {
   [ViewName in keyof ViewsToTransform]: new (
     props: Component<ViewsToTransform[ViewName]>["props"]
-  ) => Component<ViewsToTransform[ViewName]>;
+  ) => Component<ViewsToTransform[ViewName], any, any>;
 };
 
 export type ViewsToServerComponents<ViewsToTransform extends Views> = {
