@@ -3,6 +3,10 @@ import type { ReactNode } from "react";
 import { TinyEmitter } from "tiny-emitter";
 import rendererLegacy from "./rendererLegacy";
 
+if (process.env.NODE_ENV === "development") {
+  require("@nodegui/devtools").connectReactDevtools(rendererLegacy);
+}
+
 export const RenderBase = (element: JSX.Element) => {
   return rendererLegacy.updateContainer(
     element,

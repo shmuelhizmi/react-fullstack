@@ -13,10 +13,12 @@
   },
   "dependencies": {
     "react-reconciler": "0.25.1",
-    "tiny-emitter": "2.1.0"
+    "tiny-emitter": "2.1.0",
+    "@nodegui/devtools": "1.0.1"
   },
   "devDependencies": {
     "@types/react": "16.8.24",
+    "@types/node": "12.12.2",
     "typescript": "3.9.7"
   },
   "keywords": [

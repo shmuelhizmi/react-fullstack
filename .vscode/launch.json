@@ -11,7 +11,8 @@
 			"runtimeExecutable": "node",
 			"runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
 			"env": {
-				"NODE_PRESERVE_SYMLINKS": "1"
+				"NODE_PRESERVE_SYMLINKS": "1",
+				"NODE_ENV": "development"
 			},
 			"args": ["src/index.tsx"],
 	  
