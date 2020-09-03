@@ -9,12 +9,16 @@ export type View<Props extends Record<string, any>> = {
 
 export type ViewsToComponents<ViewsToTransform extends Views> = {
   [ViewName in keyof ViewsToTransform]: new (
-    props: Component<ViewsToTransform[ViewName]>["props"]
+    props:
+      | React.ComponentClass<ViewsToTransform[ViewName]["props"]>
+      | React.FunctionComponent<ViewsToTransform[ViewName]["props"]>
   ) => Component<ViewsToTransform[ViewName], any, any>;
 };
 
 export type ViewsToServerComponents<ViewsToTransform extends Views> = {
-  [ViewName in keyof ViewsToTransform]: React.FunctionComponent<ViewsToTransform[ViewName]["props"]>;
+  [ViewName in keyof ViewsToTransform]: React.FunctionComponent<
+    ViewsToTransform[ViewName]["props"]
+  >;
 };
 
 export type TransformViewProps<Props extends Record<string, any>> = {
