@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/server",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "create node express servers using react!",
   "main": "lib/index.js",
   "scripts": {
@@ -14,9 +14,9 @@
     "react-dom": ">=16.0.0"
   },
   "dependencies": {
-    "@react-fullstack/fullstack": "^0.1.16",
+    "@react-fullstack/fullstack": "^0.1.17",
     "@react-fullstack/plugin-server-side-rendring": "^0.1.10",
-    "@react-fullstack/render": "^0.1.16",
+    "@react-fullstack/render": "^0.1.17",
     "@react-fullstack/server-express": "^0.1.11"
   },
   "devDependencies": {
