@@ -26,7 +26,7 @@ export const ViewsProvider = <ViewsInterface extends Views>(props: {
         if (!app) {
           return;
         }
-        return props.children(app.createViews());
+        return props.children(app.views);
       }}
     </Context.Consumer>
   );
@@ -64,11 +64,13 @@ class App<ViewsInterface extends Views> {
   private reactTree: () => JSX.Element;
   private server?: Transport;
   private clients: Transport[] = [];
-  private views: ViewsInterface;
+  private viewsObject: ViewsInterface;
   private runningViews: ViewData[] = [];
+  public readonly views: ViewsToServerComponents<ViewsInterface>;
   constructor(params: AppParameters<ViewsInterface>) {
     this.reactTree = params.reactTree;
-    this.views = params.views;
+    this.viewsObject = params.views;
+    this.views = this.genarateViews();
   }
   public Context = getAppContext<ViewsInterface>();
   public startServer(server: Transport) {
@@ -92,9 +94,9 @@ class App<ViewsInterface extends Views> {
       });
     });
   }
-  public createViews() {
-    const views = this.views;
-    const viewsNames = Object.keys(this.views) as (keyof typeof views)[];
+  private genarateViews() {
+    const views = this.viewsObject;
+    const viewsNames = Object.keys(views) as (keyof typeof views)[];
     const genaratedViews: ViewsToServerComponents<ViewsInterface> = {} as ViewsToServerComponents<
       ViewsInterface
     >;
