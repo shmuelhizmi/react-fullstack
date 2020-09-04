@@ -1,11 +1,11 @@
 {
   "name": "@react-fullstack/client-demo",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "private": true,
   "dependencies": {
     "@babel/core": "7.9.0",
-    "@react-fullstack/demo-interfaces": "^0.1.17",
-    "@react-fullstack/fullstack": "^0.1.17",
+    "@react-fullstack/demo-interfaces": "^0.1.18",
+    "@react-fullstack/fullstack": "^0.1.18",
     "@react-fullstack/fullstack-socket-client": "^0.1.10",
     "@svgr/webpack": "4.3.3",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
