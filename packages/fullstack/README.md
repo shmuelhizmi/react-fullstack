@@ -1,7 +1,7 @@
 [![fullstack](./assets/Logo.png)](#)
 
 <p align="center">
-  A React framework for building react applications with server side executing
+  A React framework for building react applications with server-side executing
 </p>
 
 <p align="center">
@@ -9,11 +9,11 @@
   <a href="https://www.npmjs.com/package/@react-fullstack/fullstack"><img alt="NPM Downloads" src="https://img.shields.io/npm/dt/@react-fullstack/fullstack?style=for-the-badge"></a>
 </p>
 
-React-Fullstack is react framework for buiding React applications with there layout/ui components running on the client and with the connections between and business logic running on the server.
+React-Fullstack is a react framework for building React applications with their layout/UI components running on the client and with the connections between and business logic running on the server.
 
 # Getting Started - TypeScript
 
-a "React-Fullstack" app is usually made up from three different packages
+a "React-Fullstack" app is usually made up of three different packages
 
 - a server package - for the server
 - a client package - for the client react app
@@ -36,7 +36,7 @@ export const Views = {
 };
 ```
 
-next after we finished declaring all of our client components in our shared package we are going to move on to the server
+next, after we finished declaring all of our client components in our shared package we are going to move on to the server
 
 ```tsx
 // server/src/index
