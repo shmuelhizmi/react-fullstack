@@ -182,7 +182,7 @@ class App<ViewsInterface extends Views> {
   private parseViewData(viewData: ViewData): ShareableViewData {
     const { childIndex, isRoot, name, parentUid, uid } = viewData;
     const props = Object.keys(viewData.props)
-      .filter((name) => !["children", "key"].includes(name))
+      .filter((name) => !["children", "key"].includes(name) && viewData.props[name] !== undefined)
       .map((name) => {
         const prop = viewData.props[name];
         if (typeof prop === "function") {
