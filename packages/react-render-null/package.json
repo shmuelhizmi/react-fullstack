@@ -35,10 +35,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shmuelhizmi/react-express.git"
+    "url": "git+https://github.com/shmuelhizmi/react-fullstack.git"
   },
   "bugs": {
-    "url": "https://github.com/shmuelhizmi/react-express/issues"
+    "url": "https://github.com/shmuelhizmi/react-fullstack/issues"
   },
-  "homepage": "https://github.com/shmuelhizmi/react-express#readme"
+  "homepage": "https://github.com/shmuelhizmi/react-fullstack#readme"
 }
