@@ -11,6 +11,7 @@
 
 React-Fullstack is a react framework for building React applications with their layout/UI components running on the client and with the connections between them and business logic running on the server.
 
+
 ## Server-side executing and not rendering
 "react-fullstack" is the exact opposite of server-side-rendering in "react-fullstack" instead of rendering your app in the server and running it in the client you actually render the app in the client ( plus manage user UI logic ) and run it ( manage the app business-logic ) in the server.   
 for example, user UI interactions will run on the client while logic related stuff like layout changes and data fetching will run on the server
@@ -19,13 +20,13 @@ for example, user UI interactions will run on the client while logic related stu
 using React in your server will make it much less static and much more reactive a lot like the move in the client from JQuery like libraries to web frameworks like React or Vue.   
 React components will make your code much more reusable plus stuff like the [React context API](https://reactjs.org/docs/context.html) will make your code data flow much more organized. and the most important part of using React in your server - you could use the entire collection of React libraries ( at least the non-dom related part of them :} ) in your server!!!
 
-## Speed advantages and limets over regular React apps
+## Speed advantages and limits over regular React apps
 "react-fullstack" can even have some speed advantages compare to regular React applications because pages do not need to fetch data using HTTP every load.  
 the regular data flow goes something like that  
 `user action` -> `layout-change` -> `new component data HTTP fetching` -> `layout-update`  
 now with "react-fullstack" the data flow should look more like that  
 `user client action` -> `server socket action request` -> `server tells the client via socket to update itself with new data`  
-in cases where a new data is needed to update the view layout the "react-fullstack" way of updating layout should be much faster but in places whre a layout change occurs with no new data "react-fullstack" can actully be slower
+in cases where a new data is needed to update the view layout the "react-fullstack" way of updating the layout should be much faster but in places where a layout change occurs with no new data "react-fullstack" can actually be slower
 
 ## Use cases
 I recently moved a project of mine called ["web-desktop-environment"](https://github.com/shmuelhizmi/web-desktop-environment) to "react-fullstack".  
