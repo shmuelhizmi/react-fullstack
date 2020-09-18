@@ -2,16 +2,11 @@ import React from "react";
 import { v4 } from "uuid";
 import { Views, ViewsToComponents } from "../Views";
 import { ShareableViewData } from "../App";
+import { Transport } from "../types";
 
 interface ClientState {
   runningViews: ShareableViewData[];
 }
-
-export interface Transport {
-  emit: (event: string, message?: any) => void;
-  on: (event: string, handler: (...args: any) => void) => void;
-}
-
 class Client<ViewsInterface extends Views> extends React.Component<
   {
     transport: Transport;

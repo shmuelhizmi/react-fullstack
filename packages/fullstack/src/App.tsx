@@ -4,7 +4,7 @@ import { Render } from "@react-fullstack/render";
 import { Views, ViewsToServerComponents } from "./Views";
 import ViewComponent from "./component/ViewComponent";
 import { AppContext } from "./Contexts";
-import { Transport } from "./component/Client";
+import { Transport } from "./types";
 
 interface AppParameters<ViewsInterface extends Views> {
   reactTree: () => JSX.Element;
@@ -67,6 +67,16 @@ class App<ViewsInterface extends Views> {
   private viewsObject: ViewsInterface;
   private runningViews: ViewData[] = [];
   public readonly views: ViewsToServerComponents<ViewsInterface>;
+  private _isAppRunning = false;
+  private _isAppStopped = false;
+  private reactTreeController?: ReturnType<typeof Render>;
+  private cleanUpFunctions: Function[] = [];
+  public get isAppRunning() {
+    return this._isAppRunning;
+  }
+  public get isAppStopped() {
+    return this._isAppStopped;
+  }
   constructor(params: AppParameters<ViewsInterface>) {
     this.reactTree = params.reactTree;
     this.viewsObject = params.views;
@@ -75,23 +85,55 @@ class App<ViewsInterface extends Views> {
   public Context = getAppContext<ViewsInterface>();
   public startServer(server: Transport) {
     this.server = server;
-    Render(
+    this.reactTreeController = Render(
       <this.Context.Provider value={this}>
         {this.reactTree()}
       </this.Context.Provider>
     );
   }
+  public pauseApp = () => {
+    if (this.reactTreeController) {
+      this.reactTreeController.stop();
+      this._isAppStopped = true;
+    } else {
+      throw TypeError("connot pause app before app is started");
+    }
+  };
+  public resumeApp = () => {
+    if (this.reactTreeController) {
+      this.reactTreeController.continue();
+      this._isAppStopped = false;
+    } else {
+      throw TypeError("connot resume app before app is started");
+    }
+  };
+  public close = () => {
+    this.pauseApp();
+    this._isAppStopped = true;
+    this.cleanUpFunctions.forEach((cleanUp) => cleanUp());
+  };
   public addClient(client: Transport) {
     this.clients.push(client);
     this.registerSocketListener(client);
   }
+  public removeClient = (client: Transport) => {
+    this.clients = this.clients.filter(
+      (currentClient) => currentClient !== client
+    );
+  };
   private registerSocketListener(client: Transport) {
-    client.on("request_views_tree", () => {
+    const requestViewsTreeHandler = () => {
       client.emit("update_views_tree", {
         views: this.runningViews.map((runningView) =>
           this.parseViewData(runningView)
         ),
       });
+    };
+    client.on("request_views_tree", requestViewsTreeHandler);
+    this.cleanUpFunctions.push(() => {
+      if (client.off) {
+        client.off("request_views_tree", requestViewsTreeHandler);
+      }
     });
   }
   private genarateViews() {
@@ -139,50 +181,57 @@ class App<ViewsInterface extends Views> {
   ): string {
     const eventUid = v4();
     this.clients.forEach((client) => {
-      client.on(
-        `request_event`,
-        ({
-          eventArguments,
-          eventUid: requestedEventUid,
-          uid: currentEventUid,
-        }: {
-          eventArguments: any[];
-          uid: string;
-          eventUid: string;
-        }) => {
-          if (requestedEventUid !== eventUid) {
-            return;
-          }
-          const stillExist = !!this.runningViews.find(
-            (view) => view.uid === viewUid
-          );
-          if (stillExist) {
-            const eventResult = event(...eventArguments);
-            if (eventResult instanceof Promise) {
-              eventResult.then((result) => {
-                client.emit(`respond_to_event`, {
-                  data: result && JSON.parse(JSON.stringify(result)),
-                  uid: currentEventUid,
-                  eventUid,
-                });
-              });
-            } else {
-              client.emit(`respond_to_event`, {
-                data: eventResult && JSON.parse(JSON.stringify(eventResult)),
+      const requestEventHandler = ({
+        eventArguments,
+        eventUid: requestedEventUid,
+        uid: currentEventUid,
+      }: {
+        eventArguments: any[];
+        uid: string;
+        eventUid: string;
+      }) => {
+        if (requestedEventUid !== eventUid) {
+          return;
+        }
+        const stillExist = !!this.runningViews.find(
+          (view) => view.uid === viewUid
+        );
+        if (stillExist) {
+          const eventResult = event(...eventArguments);
+          if (eventResult instanceof Promise) {
+            eventResult.then((result) => {
+              client.emit("respond_to_event", {
+                data: result && JSON.parse(JSON.stringify(result)),
                 uid: currentEventUid,
                 eventUid,
               });
-            }
+            });
+          } else {
+            client.emit("respond_to_event", {
+              data: eventResult && JSON.parse(JSON.stringify(eventResult)),
+              uid: currentEventUid,
+              eventUid,
+            });
           }
         }
-      );
-    })
+      };
+      client.on("request_event", requestEventHandler);
+      this.cleanUpFunctions.push(() => {
+        if (client.off) {
+          client.off("request_event", requestEventHandler);
+        }
+      });
+    });
     return eventUid;
   }
   private parseViewData(viewData: ViewData): ShareableViewData {
     const { childIndex, isRoot, name, parentUid, uid } = viewData;
     const props = Object.keys(viewData.props)
-      .filter((name) => !["children", "key"].includes(name) && viewData.props[name] !== undefined)
+      .filter(
+        (name) =>
+          !["children", "key"].includes(name) &&
+          viewData.props[name] !== undefined
+      )
       .map((name) => {
         const prop = viewData.props[name];
         if (typeof prop === "function") {
