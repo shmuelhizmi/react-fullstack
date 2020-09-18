@@ -27,7 +27,7 @@ const App = () => {
   return (
     <Server listen port={2345} then={() => console.log("finish")}>
       <Middleware
-        middlewares={[(express.json(), express.urlencoded({ extended: true }))]}
+        middlewares={[express.json(), express.urlencoded({ extended: true })]}
       />
       <ReactRoute>
         <h1>Hello world</h1>
