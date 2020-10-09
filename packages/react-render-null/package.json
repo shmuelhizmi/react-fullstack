@@ -13,7 +13,6 @@
     "react": ">=16.0.0"
   },
   "dependencies": {
-    "react-devtools-core": "4.8.2",
     "react-reconciler": "0.25.1",
     "tiny-emitter": "2.1.0"
   },

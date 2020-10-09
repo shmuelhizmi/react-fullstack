@@ -1,16 +1,8 @@
 import React from "react";
 import { TinyEmitter } from "tiny-emitter";
-import rendererLegacy, { connectReactDevtools } from "./rendererLegacy";
+import rendererLegacy from "./rendererLegacy";
 
-let isConnectedToDevTools = false;
 export const RenderBase = (element: JSX.Element) => {
-  if (!isConnectedToDevTools) {
-    if (process.env.NODE_ENV === "development") {
-      connectReactDevtools(rendererLegacy);
-    }
-  } else {
-    isConnectedToDevTools = true;
-  }
   return rendererLegacy.updateContainer(
     element,
     rendererLegacy.createContainer()
