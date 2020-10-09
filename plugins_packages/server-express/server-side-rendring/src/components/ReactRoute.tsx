@@ -23,6 +23,13 @@ interface ReactRouteProps {
    * @default none
    */
   assetsDir?: string;
+  /**
+   * Function that return JSX Elements to render to the client
+   * @example
+   * ```tsx
+   * (req) => <h1>{req.body.title}</h1>
+   * ```
+   */
   children: RequestToReactNode | React.ReactNode;
 }
 
