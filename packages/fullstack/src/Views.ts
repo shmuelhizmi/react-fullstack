@@ -9,8 +9,8 @@ export type View<Props extends Record<string, any>> = {
 
 export type ViewsToComponents<ViewsToTransform extends Views> = {
   [ViewName in keyof ViewsToTransform]:
-    | React.ComponentClass<ViewsToTransform[ViewName]["props"]>
-    | React.FunctionComponent<ViewsToTransform[ViewName]["props"]>;
+    | React.ComponentClass<TransformViewProps<ViewsToTransform[ViewName]["props"]>>
+    | React.FunctionComponent<TransformViewProps<ViewsToTransform[ViewName]["props"]>>;
 };
 
 export type ViewsToServerComponents<ViewsToTransform extends Views> = {

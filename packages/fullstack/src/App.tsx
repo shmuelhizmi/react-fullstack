@@ -4,7 +4,7 @@ import { Render } from "@react-fullstack/render";
 import { Views, ViewsToServerComponents } from "./Views";
 import ViewComponent from "./component/ViewComponent";
 import { AppContext } from "./Contexts";
-import { Transport } from "./types";
+import { AppTransport } from "./types";
 
 interface AppParameters<ViewsInterface extends Views> {
   reactTree: () => JSX.Element;
@@ -62,8 +62,8 @@ export type ShareableViewData = ViewDataBase & {
 
 class App<ViewsInterface extends Views> {
   private reactTree: () => JSX.Element;
-  private server?: Transport;
-  private clients: Transport[] = [];
+  private server?: AppTransport;
+  private clients: AppTransport[] = [];
   private viewsObject: ViewsInterface;
   private runningViews: ViewData[] = [];
   public readonly views: ViewsToServerComponents<ViewsInterface>;
@@ -83,7 +83,7 @@ class App<ViewsInterface extends Views> {
     this.views = this.genarateViews();
   }
   public Context = getAppContext<ViewsInterface>();
-  public startServer(server: Transport) {
+  public startServer(server: AppTransport) {
     this.server = server;
     this.reactTreeController = Render(
       <this.Context.Provider value={this}>
@@ -112,16 +112,16 @@ class App<ViewsInterface extends Views> {
     this._isAppStopped = true;
     this.cleanUpFunctions.forEach((cleanUp) => cleanUp());
   };
-  public addClient(client: Transport) {
+  public addClient(client: AppTransport) {
     this.clients.push(client);
     this.registerSocketListener(client);
   }
-  public removeClient = (client: Transport) => {
+  public removeClient = (client: AppTransport) => {
     this.clients = this.clients.filter(
       (currentClient) => currentClient !== client
     );
   };
-  private registerSocketListener(client: Transport) {
+  private registerSocketListener(client: AppTransport) {
     const requestViewsTreeHandler = () => {
       client.emit("update_views_tree", {
         views: this.runningViews.map((runningView) =>

@@ -2,14 +2,31 @@ import React from "react";
 import { v4 } from "uuid";
 import { Views, ViewsToComponents } from "../Views";
 import { ShareableViewData } from "../App";
-import { Transport } from "../types";
+import { AppTransport } from "../types";
 
 interface ClientState {
   runningViews: ShareableViewData[];
 }
+
+const stringifyWithoutCircular = (json: any) => {
+  const getCircularReplacer = () => {
+    const seen = new WeakSet();
+    return (_key: string, value: any) => {
+      if (typeof value === "object" && value !== null) {
+        if (seen.has(value)) {
+          return;
+        }
+        seen.add(value);
+      }
+      return value;
+    };
+  };
+  
+  return JSON.stringify(json, getCircularReplacer());
+}
 class Client<ViewsInterface extends Views> extends React.Component<
   {
-    transport: Transport;
+    transport: AppTransport;
     views: ViewsToComponents<ViewsInterface>;
   },
   ClientState
@@ -84,7 +101,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
                 }
               );
               this.props.transport.emit("request_event", {
-                eventArguments: JSON.parse(JSON.stringify(args)),
+                eventArguments: JSON.parse(stringifyWithoutCircular(args)),
                 eventUid: prop.uid,
                 uid: requestUid,
               });
