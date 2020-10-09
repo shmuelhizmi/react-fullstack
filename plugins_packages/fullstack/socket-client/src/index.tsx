@@ -1,7 +1,5 @@
 import React from "react";
-// @ts-ignore
 import { Views, ViewsToComponents } from "@react-fullstack/fullstack/lib/Views";
-// @ts-ignore
 import { Client as ClientBase } from "@react-fullstack/fullstack";
 import { connect } from "socket.io-client";
 

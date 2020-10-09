@@ -1,5 +1,4 @@
 import React from "react";
-// @ts-ignore
 import { App, Views } from "@react-fullstack/fullstack";
 import SocketIO from "socket.io";
 
@@ -29,7 +28,7 @@ class Server<ViewsInterface extends Views> extends React.Component<
   Props<ViewsInterface>
 > {
   server?: SocketIO.Server;
-  app: App;
+  app!: App<ViewsInterface>;
   componentDidMount = () => {
     this.server = SocketIO(this.props.port);
     this.server.sockets.setMaxListeners(0);
