@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/plugin-server-side-rendring",
-  "version": "0.1.10",
+  "version": "0.1.23",
   "description": "server side rendring component for @react-fullstack/server-express .",
   "main": "lib/index.js",
   "scripts": {
