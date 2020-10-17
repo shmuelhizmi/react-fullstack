@@ -23,7 +23,9 @@ interface Props<ViewsInterface extends Views> {
 class Client<ViewsInterface extends Views> extends React.Component<
   Props<ViewsInterface>
 > {
-  socket = connect(`${this.props.host}:${this.props.port}`);
+  socket = connect(`${this.props.host}:${this.props.port}`, {
+    transports: ["websocket"],
+  });
   componentDidMount = () => {
     this.socket.on("connect", () => {
       this.socket.emit("request_views_tree");
