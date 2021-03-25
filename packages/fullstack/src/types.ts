@@ -1,5 +1,3 @@
-import { ShareableViewData } from "./App";
-
 export interface Transport<Events extends object> {
   emit: <T extends keyof Events>(event: T, message?: Events[T]) => void;
   on: <T extends keyof Events>(
@@ -14,7 +12,7 @@ export interface Transport<Events extends object> {
 
 interface AppEvents {
   update_views_tree: {
-    views: ShareableViewData[];
+    views: ExistingSharedViewData[];
   };
   update_view: {
     view: ShareableViewData;
@@ -34,5 +32,43 @@ interface AppEvents {
     eventUid: string;
   };
 }
+
+export type ViewDataBase = {
+  uid: string;
+  name: string;
+  parentUid: string;
+  childIndex: number;
+  isRoot: boolean;
+};
+
+export type ViewData = ViewDataBase & {
+  props: Record<string, any>;
+};
+
+export type Prop = {
+  name: string;
+} & (
+  | {
+      type: "data";
+      data: any;
+    }
+  | {
+      type: "event";
+      uid: string;
+    }
+);
+
+export type ShareableViewData = ViewDataBase & {
+  props: {
+    create: Array<Prop>;
+    merge: Array<Prop>; // TO DO - support view merging
+    delete: string[];
+  }
+};
+
+export type ExistingSharedViewData = ViewDataBase & {
+  props: Array<Prop>;
+  
+};
 
 export type AppTransport = Transport<AppEvents>;

@@ -1,11 +1,10 @@
 import React from "react";
 import { v4 } from "uuid";
 import { Views, ViewsToComponents } from "../Views";
-import { ShareableViewData } from "../App";
-import { AppTransport } from "../types";
+import { AppTransport, ExistingSharedViewData, ShareableViewData } from "../types";
 
 interface ClientState {
-  runningViews: ShareableViewData[];
+  runningViews: ExistingSharedViewData[];
 }
 
 const stringifyWithoutCircular = (json: any) => {
@@ -34,10 +33,10 @@ class Client<ViewsInterface extends Views> extends React.Component<
   state: ClientState = {
     runningViews: [],
   };
-  componentDidMount() {
+  componentDidMount = () => {
     this.props.transport.on(
       "update_views_tree",
-      ({ views }: { views: ShareableViewData[] }) => {
+      ({ views }) => {
         this.setState({ runningViews: views });
       }
     );
@@ -45,13 +44,16 @@ class Client<ViewsInterface extends Views> extends React.Component<
       "update_view",
       ({ view }: { view: ShareableViewData }) => {
         this.setState((state) => {
-          const runningViewIndex = state.runningViews.findIndex(
+          const runningView = state.runningViews.find(
             (currentView) => currentView.uid === view.uid
           );
-          if (runningViewIndex !== -1) {
-            state.runningViews[runningViewIndex] = view;
+          if (runningView) {
+            runningView.props = runningView.props.filter((prop) => !view.props.delete.includes(prop.name));
+            view.props.create.forEach((newProp) => {
+              runningView.props.push(newProp);
+            })
           } else {
-            state.runningViews.push(view);
+            state.runningViews.push({...view, props: view.props.create });
           }
           return { runningViews: [...state.runningViews] };
         });
@@ -73,7 +75,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
     );
     this.props.transport.emit("request_views_tree");
   }
-  renderView(view: ShareableViewData): JSX.Element {
+  renderView = (view: ExistingSharedViewData): JSX.Element => {
     const componentToRender = this.props.views[view.name];
     const props: any = { key: view.uid };
     view.props.forEach((prop) => {
@@ -118,12 +120,12 @@ class Client<ViewsInterface extends Views> extends React.Component<
       children: children.length > 0 ? children : undefined,
     });
   }
-  render() {
-    const root = this.state.runningViews.find((view) => view.isRoot);
-    if (!root) {
+  render = () => {
+    const roots = this.state.runningViews.filter((view) => view.isRoot);
+    if (roots.length === 0) {
       return <></>;
     }
-    return this.renderView(root);
+    return roots.map(this.renderView);
   }
 }
 
