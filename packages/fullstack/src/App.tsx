@@ -223,22 +223,29 @@ class App<ViewsInterface extends Views> {
       newProps.forEach((newProp) => {
         const existingProp = existingView.props.find(
           (prop) => prop.name === newProp.name
-        ) as Prop;
-        if (newProp.type === "event" && existingProp.type === "event") {
-          if (
-            this.viewEvents.get(newProp.uid) ===
-            this.viewEvents.get(existingProp.uid)
-          ) {
-            this.viewEvents.delete(newProp.uid);
-          } else {
-            createProps.push(newProp);
+        );
+        if (existingProp) {
+          if (newProp.type === "event" && existingProp.type === "event") {
+            if (
+              this.viewEvents.get(newProp.uid) ===
+              this.viewEvents.get(existingProp.uid)
+            ) {
+              this.viewEvents.delete(newProp.uid);
+            } else {
+              createProps.push(newProp);
+            }
+            existingProp.uid = newProp.uid;
+          } else if (newProp.type === "data" && existingProp.type === "data") {
+            if (
+              JSON.stringify(newProp.data) !== JSON.stringify(existingProp.data)
+            ) {
+              createProps.push(newProp);
+              existingProp.data = newProp.data;
+            }
           }
-        } else if (newProp.type === "data" && existingProp.type === "data") {
-          if (
-            JSON.stringify(newProp.data) !== JSON.stringify(existingProp.data)
-          ) {
-            createProps.push(newProp);
-          }
+        } else {
+          createProps.push(newProp);
+          existingView.props.push(newProp);
         }
       });
       if (deleteProps.length > 0 || createProps.length > 0) {
