@@ -37,6 +37,7 @@ export const ViewsProvider = <ViewsInterface extends Views>(props: {
   );
 };
 
+
 class App<ViewsInterface extends Views> {
   private reactTree: () => JSX.Element;
   private server?: AppTransport;
@@ -232,9 +233,9 @@ class App<ViewsInterface extends Views> {
             ) {
               this.viewEvents.delete(newProp.uid);
             } else {
+              existingProp.uid = newProp.uid;
               createProps.push(newProp);
             }
-            existingProp.uid = newProp.uid;
           } else if (newProp.type === "data" && existingProp.type === "data") {
             if (
               JSON.stringify(newProp.data) !== JSON.stringify(existingProp.data)
@@ -242,6 +243,11 @@ class App<ViewsInterface extends Views> {
               createProps.push(newProp);
               existingProp.data = newProp.data;
             }
+          } else if (newProp.type !== existingProp.type) {
+            existingView.props.splice(existingView.props.findIndex(
+              (prop) => prop.name === newProp.name
+            ), 1, { ...newProp })
+            createProps.push(newProp);
           }
         } else {
           createProps.push(newProp);
