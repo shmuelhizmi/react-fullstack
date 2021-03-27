@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/react": "16.8.24",
     "@types/react-dom": "16.0.5",
+	"@react-fullstack/fullstack": "0.1.29",
     "@types/socket.io-client": "1.4.32",
     "typescript": "3.9.7"
   },
@@ -29,5 +30,6 @@
     "http"
   ],
   "author": "shmuelhizmi",
-  "license": "MIT"
+  "license": "MIT",
+  "gitHead": "b443aa43d72020120bd3a1896d36ab1b52a2b03c"
 }
