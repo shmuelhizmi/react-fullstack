@@ -18,28 +18,38 @@ interface Props<ViewsInterface extends Views> {
    * client views that the server can use to render your app
    */
   views: ViewsToComponents<ViewsInterface>;
+  /**
+   * socket.io client options, note: must be passed with the first component mount, updating this prop will have no effect.
+   */
+  socketOptions?: SocketIOClient.ConnectOpts;
 }
 
 class Client<ViewsInterface extends Views> extends React.Component<
   Props<ViewsInterface>
 > {
-  socket = connect(`${this.props.host}:${this.props.port}`, {
-    transports: ["websocket"],
-  });
+  socket!: SocketIOClient.Socket;
+
   componentDidMount = () => {
+    this.socket = connect(
+      `${this.props.host}:${this.props.port}`,
+      this.props.socketOptions
+    );
     this.socket.on("connect", () => {
       this.socket.emit("request_views_tree");
     });
   };
   componentWillUnmount = () => {
-    this.socket.close()
-  }
-  render = () => (
-    <ClientBase<ViewsInterface>
-      transport={this.socket}
-      views={this.props.views}
-    />
-  );
+    this.socket.close();
+  };
+  render = () =>
+    this.socket ? (
+      <ClientBase<ViewsInterface>
+        transport={this.socket}
+        views={this.props.views}
+      />
+    ) : (
+      <> </>
+    );
 }
 
 export { Client };

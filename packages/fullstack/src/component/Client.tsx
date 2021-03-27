@@ -27,6 +27,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
   {
     transport: AppTransport;
     views: ViewsToComponents<ViewsInterface>;
+    requestViewTreeOnMount?: boolean;
   },
   ClientState
 > {
@@ -73,7 +74,9 @@ class Client<ViewsInterface extends Views> extends React.Component<
         });
       }
     );
-    this.props.transport.emit("request_views_tree");
+    if (this.props.requestViewTreeOnMount) {
+      this.props.transport.emit("request_views_tree");
+    }
   }
   renderView = (view: ExistingSharedViewData): JSX.Element => {
     const componentToRender = this.props.views[view.name];

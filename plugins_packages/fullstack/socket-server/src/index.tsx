@@ -19,6 +19,10 @@ interface Props<ViewsInterface extends Views> {
    * share one app across all clients.
    */
   singleInstance?: boolean;
+   /**
+   * socket.io server options, note: must be passed with the first component mount, updating this prop will have no effect.
+   */
+  socketOptions?: SocketIO.ServerOptions;
 }
 
 /**
@@ -29,8 +33,9 @@ class Server<ViewsInterface extends Views> extends React.Component<
 > {
   server?: SocketIO.Server;
   app!: App<ViewsInterface>;
+
   componentDidMount = () => {
-    this.server = SocketIO(this.props.port);
+    this.server = SocketIO(this.props.port, this.props.socketOptions);
     this.server.sockets.setMaxListeners(0);
     if (this.props.singleInstance) {
       this.app = new App({
@@ -60,10 +65,12 @@ class Server<ViewsInterface extends Views> extends React.Component<
       });
     }
   };
+
   componentWillUnmount = () => {
     if (this.server) this.server.close();
     if (this.app) this.app.close();
   };
+
   render = () => <></>;
 }
 
