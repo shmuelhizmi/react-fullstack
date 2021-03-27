@@ -37,6 +37,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
     this.socket.on("connect", () => {
       this.socket.emit("request_views_tree");
     });
+    this.forceUpdate();
   };
   componentWillUnmount = () => {
     this.socket.close();
