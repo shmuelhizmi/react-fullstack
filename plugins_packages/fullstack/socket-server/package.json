@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/fullstack-socket-server",
-  "version": "0.1.29",
+  "version": "0.1.31",
   "description": "create node express servers using react! - socket server",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -12,15 +12,15 @@
     "@react-fullstack/fullstack": ">=0.1.4",
     "react": ">=16.0.0",
     "react-dom": ">=16.0.0"
-},
-"dependencies": {
-	"socket.io": "2.3.0"
-},
-"devDependencies": {
-	"@types/react": "16.8.24",
+  },
+  "dependencies": {
+    "socket.io": "2.3.0"
+  },
+  "devDependencies": {
+    "@react-fullstack/fullstack": "0.1.29",
+    "@types/react": "16.8.24",
     "@types/react-dom": "16.0.5",
     "@types/socket.io": "1.4.33",
-	"@react-fullstack/fullstack": "0.1.29",
     "typescript": "3.9.7"
   },
   "keywords": [
