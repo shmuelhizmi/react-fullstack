@@ -8,7 +8,7 @@
     "prepare": "npm run build"
   },
   "peerDependencies": {
-    "@react-fullstack/render": ">=0.0.2",
+    "@react-fullstack/render": ">=0.2.0",
     "react": ">=17.0.0"
   },
   "dependencies": {
