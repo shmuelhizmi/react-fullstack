@@ -13,7 +13,7 @@
     "react": ">=17.0.0"
   },
   "dependencies": {
-    "socket.io": "2.3.0"
+    "socket.io": "2.4.0"
   },
   "devDependencies": {
     "@react-fullstack/fullstack": "^0.2.0",
