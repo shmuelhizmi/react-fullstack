@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/demo-interfaces",
-  "version": "0.1.29",
+  "version": "0.2.0",
   "description": "run your react app logic on the server - demo client",
   "main": "lib/index.js",
   "private": true,
@@ -13,7 +13,7 @@
     "react": ">=17.0.0"
   },
   "dependencies": {
-    "@react-fullstack/fullstack": "^0.1.29"
+    "@react-fullstack/fullstack": "^0.2.0"
   },
   "devDependencies": {
     "@types/react": "^17.0.0",

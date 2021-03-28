@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/server-demo",
-  "version": "0.1.32",
+  "version": "0.2.0",
   "description": "a demo react express server built on @react-fullstack/server",
   "main": "src/index.ts",
   "private": true,
@@ -9,12 +9,12 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@react-fullstack/demo-interfaces": "^0.1.29",
-    "@react-fullstack/fullstack": "^0.1.29",
-    "@react-fullstack/fullstack-socket-server": "^0.1.32",
-    "@react-fullstack/plugin-server-side-rendering": "^0.1.31",
-    "@react-fullstack/render": "^0.1.23",
-    "@react-fullstack/server-express": "^0.1.23",
+    "@react-fullstack/demo-interfaces": "^0.2.0",
+    "@react-fullstack/fullstack": "^0.2.0",
+    "@react-fullstack/fullstack-socket-server": "^0.2.0",
+    "@react-fullstack/plugin-server-side-rendering": "^0.2.0",
+    "@react-fullstack/render": "^0.2.0",
+    "@react-fullstack/server-express": "^0.2.0",
     "express": "^4.17.1",
     "react": "^17.0.0",
     "socket.io": "2.3.0"

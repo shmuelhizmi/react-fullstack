@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/plugin-server-side-rendering",
-  "version": "0.1.31",
+  "version": "0.2.0",
   "description": "server side rendring component for @react-fullstack/server-express .",
   "main": "lib/index.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "react-dom": "^17.0.0"
   },
   "devDependencies": {
-    "@react-fullstack/server-express": "0.1.23",
+    "@react-fullstack/server-express": "^0.2.0",
     "@types/express": "4.11.1",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
