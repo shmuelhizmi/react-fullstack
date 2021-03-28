@@ -1,0 +1,26 @@
+import Reconciler from "react-reconciler";
+
+export default Reconciler({
+  appendInitialChild() {},
+  createInstance() {},
+  createTextInstance() {},
+  getPublicInstance() {},
+  prepareUpdate() {},
+  resetAfterCommit() {},
+  resetTextContent() {},
+  getRootHostContext() {},
+  getChildHostContext() {},
+  supportsMutation: false,
+  cancelTimeout: clearTimeout,
+  finalizeInitialChildren: () => false,
+  isPrimaryRenderer: false,
+  noTimeout: -1,
+  now: Date.now,
+  prepareForCommit: () => null,
+  preparePortalMount() {},
+  queueMicrotask: queueMicrotask,
+  scheduleTimeout: setTimeout,
+  shouldSetTextContent: () => false,
+  supportsHydration: false,
+  supportsPersistence: false,
+});

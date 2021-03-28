@@ -12,16 +12,16 @@
     "@react-fullstack/demo-interfaces": "^0.1.29",
     "@react-fullstack/fullstack": "^0.1.29",
     "@react-fullstack/fullstack-socket-server": "^0.1.32",
-    "@react-fullstack/plugin-server-side-rendring": "^0.1.31",
+    "@react-fullstack/plugin-server-side-rendering": "^0.1.31",
     "@react-fullstack/render": "^0.1.23",
     "@react-fullstack/server-express": "^0.1.23",
     "express": "^4.17.1",
-    "react": "^16.13.1",
+    "react": "^17.0.0",
     "socket.io": "2.3.0"
   },
   "devDependencies": {
     "@types/express": "^4.11.1",
-    "@types/react": "^16.8.24",
+    "@types/react": "^17.0.0",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   },
@@ -32,9 +32,5 @@
     "http"
   ],
   "author": "shmuelhizmi",
-  "license": "MIT",
-  "peerDependencies": {
-    "@react-fullstack/fullstack": "^0.1.4",
-    "react": "^16.13.1"
-  }
+  "license": "MIT"
 }

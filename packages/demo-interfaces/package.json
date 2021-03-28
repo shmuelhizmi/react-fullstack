@@ -10,13 +10,13 @@
   },
   "peerDependencies": {
     "@react-fullstack/fullstack": "^0.1.4",
-    "react": ">=16.0.0"
+    "react": ">=17.0.0"
   },
   "dependencies": {
     "@react-fullstack/fullstack": "^0.1.29"
   },
   "devDependencies": {
-    "@types/react": "16.8.24",
+    "@types/react": "^17.0.0",
     "typescript": "3.9.7"
   },
   "keywords": [

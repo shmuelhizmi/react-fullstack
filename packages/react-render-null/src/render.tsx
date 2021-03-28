@@ -1,11 +1,13 @@
 import React from "react";
 import { TinyEmitter } from "tiny-emitter";
-import rendererLegacy from "./rendererLegacy";
+import rendererLegacy from "./rendererBackend";
 
 export const RenderBase = (element: JSX.Element) => {
   return rendererLegacy.updateContainer(
     element,
-    rendererLegacy.createContainer()
+    rendererLegacy.createContainer({}, 0, false, null),
+    null,
+    () => {}
   );
 };
 
@@ -13,12 +15,12 @@ const RenderApp = (props: {
   children: JSX.Element;
   emitter: TinyEmitter;
 }): JSX.Element => {
-  const [isStoped, setIsStoped] = React.useState(false);
+  const [isStopped, setIsStopped] = React.useState(false);
   React.useEffect(() => {
-    props.emitter.on("stop", () => setIsStoped(true));
-    props.emitter.on("continue", () => setIsStoped(false));
+    props.emitter.on("stop", () => setIsStopped(true));
+    props.emitter.on("continue", () => setIsStopped(false));
   }, []);
-  return isStoped ? <></> : props.children;
+  return isStopped ? <></> : props.children;
 };
 
 export const Render = (element: JSX.Element) => {
@@ -27,5 +29,5 @@ export const Render = (element: JSX.Element) => {
   return {
     stop: () => emitter.emit("stop"),
     continue: () => emitter.emit("continue"),
-  }
+  };
 };

@@ -9,7 +9,7 @@
   },
   "peerDependencies": {
     "@react-fullstack/render": ">=0.0.2",
-    "react": ">=16.0.0"
+    "react": ">=17.0.0"
   },
   "dependencies": {
     "socket.io-client": "2.3.0",
@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@react-fullstack/render": "^0.1.23",
-    "@types/react": "16.8.24",
+    "@types/react": "^17.0.0",
     "@types/uuid": "3.4.3",
     "typescript": "3.9.7"
   },

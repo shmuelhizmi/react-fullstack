@@ -10,16 +10,17 @@
   },
   "peerDependencies": {
     "@react-fullstack/fullstack": "^0.1.4",
-    "react": ">=16.0.0"
+    "react": ">=17.0.0"
   },
   "dependencies": {
-    "react-reconciler": "0.25.1",
+    "react-reconciler": "0.26.2",
     "tiny-emitter": "2.1.0"
   },
   "devDependencies": {
     "@types/node": "12.12.2",
-    "@types/react": "16.8.24",
-    "typescript": "3.9.7"
+    "@types/react": "^17.0.0",
+    "typescript": "3.9.7",
+    "@types/react-reconciler": "^0.26.1"
   },
   "keywords": [
     "react",

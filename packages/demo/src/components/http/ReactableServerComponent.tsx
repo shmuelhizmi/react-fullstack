@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactRoute } from "@react-fullstack/plugin-server-side-rendring";
+import { ReactRoute } from "@react-fullstack/plugin-server-side-rendering";
 
 interface State {
   currentPath: string;
