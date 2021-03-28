@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/fullstack",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "run your react app logic on the server",
   "main": "lib/index.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "@react-fullstack/render": "^0.2.0",
+    "@react-fullstack/render": "^0.2.1",
     "@types/react": "^17.0.0",
     "@types/uuid": "3.4.3",
     "typescript": "3.9.7"
