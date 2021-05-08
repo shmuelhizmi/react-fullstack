@@ -45,7 +45,7 @@ const App = () => {
 };
 
 const ServerApp = () => (
-  <Server port={8585} views={Views} singleInstance>
+  <Server port={8585} socketOptions={{ cors: { origin: "*" } }} views={Views} singleInstance>
     {() => <App />}
   </Server>
 );

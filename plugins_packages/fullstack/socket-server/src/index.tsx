@@ -1,7 +1,8 @@
 import React from "react";
 import { App, Views } from "@react-fullstack/fullstack";
+import { AppTransport } from "@react-fullstack/fullstack/lib/types";
 import SocketIO from "socket.io";
-
+import { Server as HTTPServer, createServer } from 'http'
 interface Props<ViewsInterface extends Views> {
   /**
    * The port the socket will run on.
@@ -21,8 +22,9 @@ interface Props<ViewsInterface extends Views> {
   singleInstance?: boolean;
    /**
    * socket.io server options, note: must be passed with the first component mount, updating this prop will have no effect.
+   * Note: cors header does not default to "*"
    */
-  socketOptions?: SocketIO.ServerOptions;
+  socketOptions?: Partial<SocketIO.ServerOptions>;
 }
 
 /**
@@ -35,19 +37,19 @@ class Server<ViewsInterface extends Views> extends React.Component<
   app!: App<ViewsInterface>;
 
   componentDidMount = () => {
-    this.server = SocketIO(this.props.port, this.props.socketOptions);
+    this.server = new SocketIO.Server(this.props.socketOptions);
     this.server.sockets.setMaxListeners(0);
     if (this.props.singleInstance) {
       this.app = new App({
         reactTree: this.props.children,
         views: this.props.views,
       });
-      this.app.startServer(this.server.sockets);
+      this.app.startServer(this.server.sockets as AppTransport);
       this.server.on("connection", (socket) => {
         socket.setMaxListeners(0);
-        this.app.addClient(socket);
+        this.app.addClient(socket as AppTransport);
         socket.on("disconnect", () => {
-          this.app.removeClient(socket);
+          this.app.removeClient(socket as AppTransport);
         });
       });
     } else {
@@ -56,14 +58,15 @@ class Server<ViewsInterface extends Views> extends React.Component<
           reactTree: this.props.children,
           views: this.props.views,
         });
-        app.startServer(socket);
-        app.addClient(socket);
+        app.startServer(socket as AppTransport);
+        app.addClient(socket as AppTransport);
         socket.on("disconnect", () => {
-          app.removeClient(socket);
+          app.removeClient(socket as AppTransport);
           app.close();
         });
       });
     }
+    this.server.listen(this.props.port);
   };
 
   componentWillUnmount = () => {

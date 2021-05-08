@@ -12,7 +12,6 @@
     "react": ">=17.0.0"
   },
   "dependencies": {
-    "socket.io-client": "2.3.0",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
