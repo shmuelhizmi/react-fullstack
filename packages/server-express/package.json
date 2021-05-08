@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/server-express",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "create node express servers using react!",
   "main": "lib/index.js",
   "scripts": {
