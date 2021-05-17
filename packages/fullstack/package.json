@@ -8,14 +8,12 @@
     "prepare": "npm run build"
   },
   "peerDependencies": {
-    "@react-fullstack/render": ">=0.2.0",
     "react": ">=17.0.0"
   },
   "dependencies": {
     "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "@react-fullstack/render": "^0.2.2",
     "@types/react": "^17.0.0",
     "@types/uuid": "3.4.3",
     "typescript": "3.9.7"

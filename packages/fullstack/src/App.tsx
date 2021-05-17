@@ -1,106 +1,74 @@
 import React from "react";
 import { v4 } from "uuid";
-import { Render } from "@react-fullstack/render";
 import { Views, ViewsToServerComponents } from "./Views";
 import ViewComponent from "./component/ViewComponent";
 import { AppContext } from "./Contexts";
-import {
-  AppTransport,
-  ViewData,
-  ExistingSharedViewData,
-  Prop,
-} from "./types";
+import { AppTransport, ViewData, ExistingSharedViewData, Prop } from "./types";
 
 interface AppParameters<ViewsInterface extends Views> {
-  reactTree: () => JSX.Element;
+  children: () => JSX.Element;
   views: ViewsInterface;
+  transport: AppTransport;
+  paused: boolean;
+  transportIsClient: boolean;
 }
-
-const getAppContext = <ViewsInterface extends Views>() => {
-  const Type = React.createContext<App<ViewsInterface> | undefined>(undefined);
-  return AppContext as typeof Type;
-};
 
 export const ViewsProvider = <ViewsInterface extends Views>(props: {
   children: (views: ViewsToServerComponents<ViewsInterface>) => JSX.Element;
 }) => {
-  const Context = getAppContext<ViewsInterface>();
   return (
-    <Context.Consumer>
+    <AppContext.Consumer>
       {(app) => {
         if (!app) {
           return;
         }
         return props.children(app.views);
       }}
-    </Context.Consumer>
+    </AppContext.Consumer>
   );
 };
 
-
-class App<ViewsInterface extends Views> {
-  private reactTree: () => JSX.Element;
-  private server?: AppTransport;
+class App<ViewsInterface extends Views> extends React.Component<
+  AppParameters<ViewsInterface>
+> {
+  private server: AppTransport;
   private clients: AppTransport[] = [];
   private viewsObject: ViewsInterface;
   private existingSharedViews: ExistingSharedViewData[] = [];
   private viewEvents = new Map<string, (...args: any) => any | Promise<any>>();
   public readonly views: ViewsToServerComponents<ViewsInterface>;
-  private _isAppRunning = false;
-  private _isAppStopped = false;
-  private reactTreeController?: ReturnType<typeof Render>;
   private cleanUpFunctions: Function[] = [];
-  public get isAppRunning() {
-    return this._isAppRunning;
-  }
-  public get isAppStopped() {
-    return this._isAppStopped;
-  }
-  constructor(params: AppParameters<ViewsInterface>) {
-    this.reactTree = params.reactTree;
-    this.viewsObject = params.views;
+  constructor(props: AppParameters<ViewsInterface>) {
+    super(props);
+    this.viewsObject = props.views;
+    this.server = props.transport;
     this.views = this.generateViews();
   }
-  public Context = getAppContext<ViewsInterface>();
-  public startServer(server: AppTransport) {
-    this.server = server;
-    this.reactTreeController = Render(
-      <this.Context.Provider value={this}>
-        {this.reactTree()}
-      </this.Context.Provider>
+  render = () =>
+    !this.props.paused && (
+      <AppContext.Provider value={this}>
+        {this.props.children()}
+      </AppContext.Provider>
     );
-  }
-  public pauseApp = () => {
-    if (this.reactTreeController) {
-      this.reactTreeController.stop();
-      this._isAppStopped = true;
-    } else {
-      throw TypeError("cannot pause app before app is started");
+
+  componentDidMount = () => {
+    if (this.props.transportIsClient) {
+      this.addClient(this.props.transport);
     }
   };
-  public resumeApp = () => {
-    if (this.reactTreeController) {
-      this.reactTreeController.continue();
-      this._isAppStopped = false;
-    } else {
-      throw TypeError("cannot resume app before app is started");
-    }
+  componentWillUnmount = () => {
+    this.cleanUpFunctions.forEach((f) => f());
   };
-  public close = () => {
-    this.pauseApp();
-    this._isAppStopped = true;
-    this.cleanUpFunctions.forEach((cleanUp) => cleanUp());
-  };
-  public addClient(client: AppTransport) {
+  public addClient = (client: AppTransport) => {
     this.clients.push(client);
     this.registerSocketListener(client);
-  }
+  };
   public removeClient = (client: AppTransport) => {
     this.clients = this.clients.filter(
       (currentClient) => currentClient !== client
     );
   };
-  private registerSocketListener(client: AppTransport) {
+  private registerSocketListener = (client: AppTransport) => {
     const requestViewsTreeHandler = () => {
       client.emit("update_views_tree", {
         views: this.existingSharedViews,
@@ -146,19 +114,20 @@ class App<ViewsInterface extends Views> {
         client.off("request_event", requestEventHandler);
       }
     });
-  }
-  private generateViews() {
+  };
+  private generateViews = () => {
     const views = this.viewsObject;
     const viewsNames = Object.keys(views) as (keyof typeof views)[];
-    const generatedViews: ViewsToServerComponents<ViewsInterface> = {} as ViewsToServerComponents<ViewsInterface>;
+    const generatedViews: ViewsToServerComponents<ViewsInterface> =
+      {} as ViewsToServerComponents<ViewsInterface>;
     viewsNames.forEach((viewName) => {
-      generatedViews[viewName] = (((props: any) => (
+      generatedViews[viewName] = ((props: any) => (
         <ViewComponent name={viewName as string} props={props} />
-      )) as unknown) as typeof generatedViews[typeof viewName];
+      )) as unknown as typeof generatedViews[typeof viewName];
     });
     return generatedViews;
-  }
-  public updateRunningView(viewData: ViewData) {
+  };
+  public updateRunningView = (viewData: ViewData) => {
     if (!this.server) {
       return;
     }
@@ -244,9 +213,13 @@ class App<ViewsInterface extends Views> {
               existingProp.data = newProp.data;
             }
           } else if (newProp.type !== existingProp.type) {
-            existingView.props.splice(existingView.props.findIndex(
-              (prop) => prop.name === newProp.name
-            ), 1, { ...newProp })
+            existingView.props.splice(
+              existingView.props.findIndex(
+                (prop) => prop.name === newProp.name
+              ),
+              1,
+              { ...newProp }
+            );
             createProps.push(newProp);
           }
         } else {
@@ -267,7 +240,7 @@ class App<ViewsInterface extends Views> {
         });
       }
     }
-  }
+  };
   public deleteRunningView = (uid: string) => {
     const runningViewIndex = this.existingSharedViews.findIndex(
       (view) => view.uid === uid
@@ -287,13 +260,13 @@ class App<ViewsInterface extends Views> {
     }
   };
 
-  private registerViewEvent(
+  private registerViewEvent = (
     event: (...args: any) => any | Promise<any>
-  ): string {
+  ): string => {
     const eventUid = v4();
     this.viewEvents.set(eventUid, event);
     return eventUid;
-  }
+  };
 }
 
 export default App;
