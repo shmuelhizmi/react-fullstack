@@ -1,0 +1,26 @@
+{
+  "name": "@react-fullstack/fullstack-v2-shared",
+  "version": "0.2.2",
+  "description": "shared components for react-fullstack v2",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "3.9.7"
+  },
+  "author": "shmuelhizmi",
+  "license": "MIT",
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shmuelhizmi/react-fullstack.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shmuelhizmi/react-fullstack/issues"
+  },
+  "homepage": "https://github.com/shmuelhizmi/react-fullstack/tree/master/fullstack-v2/cli#readme"
+}
