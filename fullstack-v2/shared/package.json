@@ -7,8 +7,12 @@
     "build": "tsc",
     "prepare": "npm run build"
   },
+  "peerDependencies": {
+    "react": "17.x"
+  },
   "devDependencies": {
-    "typescript": "3.9.7"
+    "typescript": "3.9.7",
+    "@types/react": "17.0.19"
   },
   "author": "shmuelhizmi",
   "license": "MIT",
