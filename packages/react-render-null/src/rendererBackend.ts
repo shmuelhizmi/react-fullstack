@@ -18,7 +18,6 @@ export default Reconciler({
   now: Date.now,
   prepareForCommit: () => null,
   preparePortalMount() {},
-  queueMicrotask: queueMicrotask,
   scheduleTimeout: setTimeout,
   shouldSetTextContent: () => false,
   supportsHydration: false,
