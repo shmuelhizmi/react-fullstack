@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/render",
-  "version": "0.3.0-alpha.0",
+  "version": "0.2.2",
   "description": "render react tree to nothing!",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -18,8 +18,8 @@
   "devDependencies": {
     "@types/node": "12.12.2",
     "@types/react": "^17.0.0",
-    "@types/react-reconciler": "^0.26.1",
     "@types/react-test-renderer": "17.0.1",
+    "@types/react-reconciler": "^0.26.1",
     "typescript": "3.9.7"
   },
   "keywords": [
