@@ -13,12 +13,12 @@
     "react": ">=17.0.0"
   },
   "dependencies": {
-    "react-reconciler": "0.26.2",
-    "tiny-emitter": "2.1.0"
+    "react-test-renderer": "^17.0.0"
   },
   "devDependencies": {
     "@types/node": "12.12.2",
     "@types/react": "^17.0.0",
+    "@types/react-test-renderer": "17.0.1",
     "@types/react-reconciler": "^0.26.1",
     "typescript": "3.9.7"
   },
