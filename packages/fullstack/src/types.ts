@@ -10,7 +10,7 @@ export interface Transport<Events extends object> {
   ) => void;
 }
 
-interface AppEvents {
+export interface AppEvents {
   update_views_tree: {
     views: ExistingSharedViewData[];
   };

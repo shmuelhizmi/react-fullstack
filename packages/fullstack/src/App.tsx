@@ -3,15 +3,33 @@ import { v4 } from "uuid";
 import { Views, ViewsToServerComponents } from "./Views";
 import ViewComponent from "./component/ViewComponent";
 import { AppContext } from "./Contexts";
-import { AppTransport, ViewData, ExistingSharedViewData, Prop } from "./types";
+import { ViewData, ExistingSharedViewData, Prop } from "./types";
+import { CompiledAppTransport } from "./compiledTypes";
+import { DecompileTransport, decompileTransport } from "./decompiled-transport";
 
 interface AppParameters<ViewsInterface extends Views> {
   children: () => JSX.Element;
   views: ViewsInterface;
-  transport: AppTransport;
+  transport: CompiledAppTransport;
   paused: boolean;
   transportIsClient: boolean;
 }
+
+const viewProxy = new Proxy({} as Record<string, any>, {
+  get: (target, name) => {
+    if (typeof name !== 'string') {
+      throw new Error('trying to access a view with a non string name');
+    }
+    if (!target[name]) {
+      target[name] = (props: any) => {
+        return (
+          <ViewComponent name={name} props={props} />
+        )
+      }
+    }
+    return target[name];
+  }
+}) as any;
 
 export const ViewsProvider = <ViewsInterface extends Views>(props: {
   children: (views: ViewsToServerComponents<ViewsInterface>) => JSX.Element;
@@ -22,7 +40,7 @@ export const ViewsProvider = <ViewsInterface extends Views>(props: {
         if (!app) {
           return;
         }
-        return props.children(app.views);
+        return props.children(viewProxy);
       }}
     </AppContext.Consumer>
   );
@@ -31,18 +49,14 @@ export const ViewsProvider = <ViewsInterface extends Views>(props: {
 class App<ViewsInterface extends Views> extends React.Component<
   AppParameters<ViewsInterface>
 > {
-  private server: AppTransport;
-  private clients: AppTransport[] = [];
-  private viewsObject: ViewsInterface;
+  private server: DecompileTransport;
+  private clients: DecompileTransport[] = [];
   private existingSharedViews: ExistingSharedViewData[] = [];
   private viewEvents = new Map<string, (...args: any) => any | Promise<any>>();
-  public readonly views: ViewsToServerComponents<ViewsInterface>;
   private cleanUpFunctions: Function[] = [];
   constructor(props: AppParameters<ViewsInterface>) {
     super(props);
-    this.viewsObject = props.views;
-    this.server = props.transport;
-    this.views = this.generateViews();
+    this.server = decompileTransport(props.transport);
   }
   render = () =>
     !this.props.paused && (
@@ -59,22 +73,23 @@ class App<ViewsInterface extends Views> extends React.Component<
   componentWillUnmount = () => {
     this.cleanUpFunctions.forEach((f) => f());
   };
-  public addClient = (client: AppTransport) => {
-    this.clients.push(client);
-    this.registerSocketListener(client);
+  public addClient = (client: CompiledAppTransport) => {
+    const clientTransport = decompileTransport(client);
+    this.clients.push(clientTransport);
+    this.registerSocketListener(clientTransport);
   };
-  public removeClient = (client: AppTransport) => {
+  public removeClient = (client: DecompileTransport) => {
     this.clients = this.clients.filter(
       (currentClient) => currentClient !== client
     );
   };
-  private registerSocketListener = (client: AppTransport) => {
+  private registerSocketListener = (client: DecompileTransport) => {
     const requestViewsTreeHandler = () => {
       client.emit("update_views_tree", {
         views: this.existingSharedViews,
       });
     };
-    client.on("request_views_tree", requestViewsTreeHandler);
+    const cleanReqTree = client.on("request_views_tree", requestViewsTreeHandler);
     const requestEventHandler = ({
       eventArguments,
       eventUid: requestedEventUid,
@@ -94,151 +109,123 @@ class App<ViewsInterface extends Views> extends React.Component<
       if (eventResult instanceof Promise) {
         eventResult.then((result) => {
           client.emit("respond_to_event", {
-            data: result && JSON.parse(JSON.stringify(result)),
+            data: result && result,
             uid: currentEventUid,
             eventUid: requestedEventUid,
           });
         });
       } else {
         client.emit("respond_to_event", {
-          data: eventResult && JSON.parse(JSON.stringify(eventResult)),
+          data: eventResult && eventResult,
           uid: currentEventUid,
           eventUid: requestedEventUid,
         });
       }
     };
-    client.on("request_event", requestEventHandler);
+    const cleanReqEvent = client.on("request_event", requestEventHandler);
     this.cleanUpFunctions.push(() => {
-      if (client.off) {
-        client.off("request_views_tree", requestViewsTreeHandler);
-        client.off("request_event", requestEventHandler);
-      }
+      cleanReqTree();
+      cleanReqEvent();
     });
-  };
-  private generateViews = () => {
-    const views = this.viewsObject;
-    const viewsNames = Object.keys(views) as (keyof typeof views)[];
-    const generatedViews: ViewsToServerComponents<ViewsInterface> =
-      {} as ViewsToServerComponents<ViewsInterface>;
-    viewsNames.forEach((viewName) => {
-      generatedViews[viewName] = ((props: any) => (
-        <ViewComponent name={viewName as string} props={props} />
-      )) as unknown as typeof generatedViews[typeof viewName];
-    });
-    return generatedViews;
   };
   public updateRunningView = (viewData: ViewData) => {
     if (!this.server) {
       return;
     }
-    const { childIndex, isRoot, name, parentUid, uid } = viewData;
-    const newProps = Object.keys(viewData.props)
-      .filter(
-        (name) =>
-          !["children", "key"].includes(name) &&
-          viewData.props[name] !== undefined
-      )
-      .map((name) => {
-        const prop = viewData.props[name];
-        if (typeof prop === "function") {
-          return {
-            name,
-            type: "event" as const,
-            uid: this.registerViewEvent(prop),
-          };
-        } else {
-          return {
-            name,
-            type: "data" as const,
-            data: JSON.parse(JSON.stringify(prop)),
-          };
-        }
-      });
     const existingView = this.existingSharedViews.find(
-      (view) => view.uid === uid
+      (view) => view.uid === viewData.uid
     );
-    const result: ExistingSharedViewData = {
-      childIndex,
-      isRoot,
-      name,
-      parentUid,
-      uid,
-      props: newProps,
+    const mapProps = (name: string) => {
+      const prop = viewData.props[name];
+      if (typeof prop === "function") {
+        return {
+          name,
+          type: "event" as const,
+          uid: this.registerViewEvent(prop),
+        };
+      } else {
+        return {
+          name,
+          type: "data" as const,
+          data: prop,
+        };
+      }
     };
+    const isValidProps = (name: string) => {
+      return !["children", "key"].includes(name) && viewData.props[name] !== undefined;
+    }
+    const newPropsNames = Object.keys(viewData.props);
     if (!existingView) {
-      this.existingSharedViews.push(result);
+      const newView: ExistingSharedViewData = {
+        ...viewData,
+        props: newPropsNames.filter(isValidProps).map(mapProps),
+      };
+      this.existingSharedViews.push(newView);
       this.server.emit("update_view", {
         view: {
-          ...result,
+          ...newView,
           props: {
             delete: [],
             merge: [],
-            create: result.props,
+            create: newView.props,
           },
         },
       });
-    } else {
-      const createProps: Prop[] = [];
-      const deleteProps: string[] = [];
-      const newPropsNames = newProps.map((newProp) => newProp.name);
-      existingView.props = existingView.props.filter((existingProp) => {
-        if (newPropsNames.includes(existingProp.name)) {
+      return;
+    }
+    const propsToDelete = (existingView?.props || []).filter(
+      (propName) => viewData.props[propName.name] === undefined
+    );
+    propsToDelete.forEach((prop) => {
+      Reflect.deleteProperty(existingView.props, prop.name);
+    });
+    const boundExistingProps = (name: string) => {
+      const existing = existingView && existingView.props.find((prop) => prop.name === name);
+      if (!existing) {
+        existingView.props.push(mapProps(name));
+        return true;
+      }
+      if (existing.type === "data") {
+        if (existing.data !== viewData.props[name]) {
+          existing.data = viewData.props[name];
           return true;
         }
-        deleteProps.push(existingProp.name);
-        if (existingProp.type === "event") {
-          this.viewEvents.delete(existingProp.uid);
-        }
-      });
-      newProps.forEach((newProp) => {
-        const existingProp = existingView.props.find(
-          (prop) => prop.name === newProp.name
-        );
-        if (existingProp) {
-          if (newProp.type === "event" && existingProp.type === "event") {
-            if (
-              this.viewEvents.get(newProp.uid) ===
-              this.viewEvents.get(existingProp.uid)
-            ) {
-              this.viewEvents.delete(newProp.uid);
-            } else {
-              existingProp.uid = newProp.uid;
-              createProps.push(newProp);
-            }
-          } else if (newProp.type === "data" && existingProp.type === "data") {
-            if (
-              JSON.stringify(newProp.data) !== JSON.stringify(existingProp.data)
-            ) {
-              createProps.push(newProp);
-              existingProp.data = newProp.data;
-            }
-          } else if (newProp.type !== existingProp.type) {
-            existingView.props.splice(
-              existingView.props.findIndex(
-                (prop) => prop.name === newProp.name
-              ),
-              1,
-              { ...newProp }
-            );
-            createProps.push(newProp);
-          }
-        } else {
-          createProps.push(newProp);
-          existingView.props.push(newProp);
-        }
-      });
-      if (deleteProps.length > 0 || createProps.length > 0) {
-        this.server.emit("update_view", {
-          view: {
-            ...result,
-            props: {
-              create: createProps,
-              delete: deleteProps,
-              merge: [],
-            },
-          },
-        });
+        return false;
       }
+      if (existing.type === "event") {
+        if (typeof viewData.props[name] === "function") {
+          this.viewEvents.set(existing.uid, viewData.props[name]);
+          return false;
+        }
+        existingView.props = existingView.props.filter((prop) => prop.name !== name);
+        existingView.props.push(mapProps(name));
+        return true;
+      }
+    }
+    const propsToAdd = newPropsNames.filter(
+      (name) => {
+        if (!isValidProps(name)) {
+          return false;
+        }
+        return boundExistingProps(name);
+      }
+    ).map((name) => {
+      return existingView.props.find((prop) => prop.name === name);
+    }).filter(Boolean) as Prop[];
+    if (propsToAdd.length === 0 && propsToDelete.length === 0) {
+      return;
+    }
+    if (propsToAdd.length > 0 || propsToDelete.length > 0) {
+      this.server.emit("update_view", {
+        view: {
+          ...existingView,
+          props: {
+            create: propsToAdd,
+            delete: propsToDelete.map((prop) => prop.name),
+            merge: [],
+          },
+        },
+      });
     }
   };
   public deleteRunningView = (uid: string) => {

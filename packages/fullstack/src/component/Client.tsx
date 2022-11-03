@@ -1,7 +1,9 @@
 import React from "react";
 import { v4 } from "uuid";
 import { Views, ViewsToComponents } from "../Views";
-import { AppTransport, ExistingSharedViewData, ShareableViewData } from "../types";
+import { ExistingSharedViewData, ShareableViewData } from "../types";
+import { CompiledAppTransport } from "../compiledTypes";
+import { decompileTransport } from "../decompiled-transport";
 
 interface ClientState {
   runningViews: ExistingSharedViewData[];
@@ -25,7 +27,7 @@ const stringifyWithoutCircular = (json: any) => {
 }
 class Client<ViewsInterface extends Views> extends React.Component<
   {
-    transport: AppTransport;
+    transport: CompiledAppTransport;
     views: ViewsToComponents<ViewsInterface>;
     requestViewTreeOnMount?: boolean;
   },
@@ -34,14 +36,15 @@ class Client<ViewsInterface extends Views> extends React.Component<
   state: ClientState = {
     runningViews: [],
   };
+  transport = decompileTransport(this.props.transport);
   componentDidMount = () => {
-    this.props.transport.on(
+    this.transport.on(
       "update_views_tree",
       ({ views }) => {
         this.setState({ runningViews: views });
       }
     );
-    this.props.transport.on(
+    this.transport.on(
       "update_view",
       ({ view }: { view: ShareableViewData }) => {
         this.setState((state) => {
@@ -60,7 +63,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
         });
       }
     );
-    this.props.transport.on(
+    this.transport.on(
       "delete_view",
       ({ viewUid }: { viewUid: string }) => {
         this.setState((state) => {
@@ -75,7 +78,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
       }
     );
     if (this.props.requestViewTreeOnMount) {
-      this.props.transport.emit("request_views_tree");
+      this.transport.emit("request_views_tree");
     }
   }
   renderView = (view: ExistingSharedViewData): JSX.Element => {
@@ -89,7 +92,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
           (props[prop.name] = (...args: any) => {
             return new Promise((resolve) => {
               const requestUid = v4();
-              this.props.transport.on(
+              this.transport.on(
                 "respond_to_event",
                 ({
                   data,
@@ -105,7 +108,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
                   }
                 }
               );
-              this.props.transport.emit("request_event", {
+              this.transport.emit("request_event", {
                 eventArguments: JSON.parse(stringifyWithoutCircular(args)),
                 eventUid: prop.uid,
                 uid: requestUid,

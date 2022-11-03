@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ViewsProvider } from "@react-fullstack/fullstack";
 import { Views } from "@react-fullstack/demo-interfaces";
 import { Server } from "@react-fullstack/fullstack-socket-server";
@@ -6,6 +6,16 @@ import { Server } from "@react-fullstack/fullstack-socket-server";
 const App = () => {
   const [location, setLocation] = useState<"home" | "error" | "login">("login");
   const [name, setName] = useState("");
+  const [_, setNothing] = useState(0);
+  useEffect(() => {
+    const doNothing = () => {
+      setTimeout(() => {
+        setNothing(Math.random());
+        doNothing();
+      }, 1000);
+    };
+    doNothing();
+  }, []);
   return (
     <ViewsProvider<typeof Views>>
       {({ Home, Login, Prompt, Gif }) => {
@@ -31,7 +41,7 @@ const App = () => {
             )}
             {location === "error" && (
               <Prompt
-                message={"worng password"}
+                message={"wrong password"}
                 onOk={() => setLocation("login")}
               >
                 <Gif url="https://upload.wikimedia.org/wikipedia/commons/7/78/GRACE_globe_animation.gif" />
