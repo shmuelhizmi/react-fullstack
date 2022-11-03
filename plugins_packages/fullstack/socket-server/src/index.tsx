@@ -1,6 +1,6 @@
 import React from "react";
 import { App, Views } from "@react-fullstack/fullstack";
-import { AppTransport } from "@react-fullstack/fullstack/lib/types";
+import { Transport } from "@react-fullstack/fullstack/lib/types";
 import SocketIO from "socket.io";
 
 interface Props<ViewsInterface extends Views> {
@@ -53,10 +53,10 @@ class Server<ViewsInterface extends Views> extends React.Component<
       if (this.props.singleInstance) {
         if (this.mainAppRef) {
           socket.setMaxListeners(0);
-          this.mainAppRef.addClient(socket as AppTransport);
+          this.mainAppRef.addClient(socket as Transport<any>);
           socket.on("disconnect", () => {
             if (this.mainAppRef) {
-              this.mainAppRef.removeClient(socket as AppTransport);
+              this.mainAppRef.removeClient(socket as Transport<any>);
             }
           });
         }
@@ -85,7 +85,7 @@ class Server<ViewsInterface extends Views> extends React.Component<
         paused={!this.props.singleInstance}
         views={this.props.views}
         transportIsClient={false}
-        transport={this.server.sockets as AppTransport}
+        transport={this.server.sockets as Transport<any>}
         />
       {Object.entries(this.state.apps).map(([id, socket]) => (
         <App<ViewsInterface>
@@ -94,7 +94,7 @@ class Server<ViewsInterface extends Views> extends React.Component<
           transportIsClient
           children={this.props.children}
           views={this.props.views}
-          transport={socket as AppTransport}
+          transport={socket as Transport<any>}
         />
       ))}
     </>

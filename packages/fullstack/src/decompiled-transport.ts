@@ -1,6 +1,6 @@
 import { CompiledAppTransport, CompiledAppEvents } from "./compiledTypes";
 import { EventContent, Events } from "./enum";
-import { AppEvents, Prop } from "./types";
+import { AppEvents, Prop, Transport } from "./types";
 
 const emitHandlerMap: {
     [Key in keyof typeof map]: (data: AppEvents[Key]) => CompiledAppEvents[(typeof map)[Key]];
@@ -155,16 +155,16 @@ const onHandlerMap: {
     },
 };
 
-export const decompileTransport = (transport: CompiledAppTransport) => {
+export const decompileTransport = (transport: Transport<Record<string, any>>) => {
     const on = <Key extends keyof AppEvents>(event: Key, handler: (data: AppEvents[Key]) => void) => {
         const handlerExtended = (data: any) => {
             handler((onHandlerMap[map[event]] as any)(data));
         };
-        transport.on(map[event], handlerExtended);
-        return () => transport.off?.(map[event], handlerExtended);
+        transport.on(String(map[event]), handlerExtended);
+        return () => transport.off?.(String(map[event]), handlerExtended);
     }
     const emit = <Key extends keyof AppEvents>(event: Key, data?: AppEvents[Key]) => {
-        transport.emit(map[event], (emitHandlerMap[event] as any)(data!) as any);
+        transport.emit(String(map[event]), (emitHandlerMap[event] as any)(data!) as any);
     }
     return { on, emit };
 }

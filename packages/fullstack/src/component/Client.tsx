@@ -1,8 +1,7 @@
 import React from "react";
 import { v4 } from "uuid";
 import { Views, ViewsToComponents } from "../Views";
-import { ExistingSharedViewData, ShareableViewData } from "../types";
-import { CompiledAppTransport } from "../compiledTypes";
+import { ExistingSharedViewData, ShareableViewData, Transport } from "../types";
 import { decompileTransport } from "../decompiled-transport";
 
 interface ClientState {
@@ -27,7 +26,7 @@ const stringifyWithoutCircular = (json: any) => {
 }
 class Client<ViewsInterface extends Views> extends React.Component<
   {
-    transport: CompiledAppTransport;
+    transport: Transport<Record<string, any>>;
     views: ViewsToComponents<ViewsInterface>;
     requestViewTreeOnMount?: boolean;
   },
