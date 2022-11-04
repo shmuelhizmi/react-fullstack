@@ -169,4 +169,30 @@ export const decompileTransport = (transport: Transport<Record<string, any>>) =>
     return { on, emit };
 }
 
+const emitFactory = () => {
+    const events = map;
+    return new Proxy(events, {
+        get: (target, prop) => {
+            if (prop in target) {
+                return (transport: Transport<Record<string, any>>, data?: AppEvents[keyof AppEvents]) => {
+                    transport.emit(String(map[prop as keyof AppEvents]), (emitHandlerMap[prop as keyof AppEvents] as any)(data!) as any);
+                }
+            }
+            return undefined;
+        }
+    }) as unknown as {
+        /**
+         * @param transport
+         * @param data
+         * @description emit event to transport
+         */
+        [Key in keyof AppEvents]: (transport: Transport<Record<string, any>>, data?: AppEvents[Key]) => void;
+    }
+}
+
+/**
+ * for usage in custom clients
+ */
+export const emit = emitFactory();
+
 export type DecompileTransport = ReturnType<typeof decompileTransport>;

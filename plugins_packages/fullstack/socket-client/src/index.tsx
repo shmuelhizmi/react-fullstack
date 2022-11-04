@@ -1,6 +1,6 @@
 import React from "react";
 import { Views, ViewsToComponents } from "@react-fullstack/fullstack/lib/Views";
-import { Client as ClientBase } from "@react-fullstack/fullstack";
+import { Client as ClientBase, emit } from "@react-fullstack/fullstack";
 import { connect } from "socket.io-client";
 
 interface Props<ViewsInterface extends Views> {
@@ -35,7 +35,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
       this.props.socketOptions
     );
     this.socket.on("connect", () => {
-      this.socket.emit("request_views_tree");
+      emit.request_views_tree(this.socket);
     });
     this.forceUpdate();
   };
