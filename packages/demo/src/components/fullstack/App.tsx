@@ -5,6 +5,7 @@ import { Server } from "@react-fullstack/fullstack-socket-server";
 
 const App = () => {
   const [location, setLocation] = useState<"home" | "error" | "login">("login");
+  const [feeling, setFeeling] = useState<"goood" | "bad">("goood");
   const [name, setName] = useState("");
   const [_, setNothing] = useState(0);
   useEffect(() => {
@@ -22,7 +23,12 @@ const App = () => {
         return (
           <>
             {location === "home" && (
-              <Home logout={() => setLocation("login")} username={name}>
+              <Home info={{ feeling }} moodSwing={() => {
+                setFeeling(
+                  feeling === "goood" ? "bad" : "goood"
+                );
+                console.log("moodSwing");
+              }} logout={() => setLocation("login")} username={name}>
                 <Gif url="https://upload.wikimedia.org/wikipedia/commons/7/78/GRACE_globe_animation.gif" />
                 <Gif url="https://upload.wikimedia.org/wikipedia/commons/7/78/GRACE_globe_animation.gif" />
               </Home>

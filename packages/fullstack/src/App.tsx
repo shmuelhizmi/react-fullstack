@@ -45,6 +45,23 @@ export const ViewsProvider = <ViewsInterface extends Views>(props: {
   );
 };
 
+function deeplyEqual(x: any, y: any) {
+  if (x === y) {
+    return true;
+  }
+  if (typeof x == "object" && x != null && typeof y == "object" && y != null) {
+    if (Object.keys(x).length != Object.keys(y).length) return false
+    for (var prop in x) {
+      if (y.hasOwnProperty(prop)) {
+        if (!deeplyEqual(x[prop], y[prop])) return false;
+      } else {
+        return false;
+      }
+    }
+  }
+  return false;
+}
+
 class App<ViewsInterface extends Views> extends React.Component<
   AppParameters<ViewsInterface>
 > {
@@ -185,7 +202,7 @@ class App<ViewsInterface extends Views> extends React.Component<
         return true;
       }
       if (existing.type === "data") {
-        if (existing.data !== viewData.props[name]) {
+        if (!deeplyEqual(existing.data, viewData.props[name])) {
           existing.data = viewData.props[name];
           return true;
         }

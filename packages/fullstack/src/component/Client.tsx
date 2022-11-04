@@ -8,7 +8,10 @@ interface ClientState {
   runningViews: ExistingSharedViewData[];
 }
 
-const stringifyWithoutCircular = (json: any) => {
+const stringifyWithoutCircular = (json: any[]) => {
+  if (json.some((child) => child instanceof Event || (typeof child === 'object' && '_reactName' in child))) {
+    throw new Error("passing js events to the server is prohibited, make sure you are not passing a callback's directly to a dom element");
+  }
   const getCircularReplacer = () => {
     const seen = new WeakSet();
     return (_key: string, value: any) => {
