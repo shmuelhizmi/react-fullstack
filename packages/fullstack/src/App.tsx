@@ -58,6 +58,7 @@ function deeplyEqual(x: any, y: any) {
         return false;
       }
     }
+    return true;
   }
   return false;
 }
