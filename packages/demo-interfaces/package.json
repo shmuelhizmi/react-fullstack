@@ -16,7 +16,7 @@
     "@react-fullstack/fullstack": "^0.3.0"
   },
   "devDependencies": {
-    "@types/react": "^17.0.0",
+    "@types/react": "18.0.25",
     "typescript": "3.9.7"
   },
   "keywords": [

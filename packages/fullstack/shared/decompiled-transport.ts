@@ -1,4 +1,4 @@
-import { CompiledAppTransport, CompiledAppEvents } from "./compiledTypes";
+import { CompiledAppEvents } from "./compiledTypes";
 import { EventContent, Events } from "./enum";
 import { AppEvents, Prop, Transport } from "./types";
 

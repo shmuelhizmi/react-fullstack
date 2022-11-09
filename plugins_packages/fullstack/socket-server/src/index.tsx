@@ -1,7 +1,7 @@
 import React from "react";
-import { App, Views } from "@react-fullstack/fullstack";
-import { Transport } from "@react-fullstack/fullstack/lib/types";
+import { App } from "@react-fullstack/fullstack/server";
 import SocketIO from "socket.io";
+import { Transport, Views } from "@react-fullstack/fullstack/shared";
 
 interface Props<ViewsInterface extends Views> {
   /**

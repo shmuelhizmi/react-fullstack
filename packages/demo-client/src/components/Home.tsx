@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
-import { Component } from "@react-fullstack/fullstack";
+import { Component } from "@react-fullstack/fullstack/client";
 import { Views } from "@react-fullstack/demo-interfaces";
 
 class Home extends Component<typeof Views["Home"]> {

@@ -1,8 +1,8 @@
 import React from "react";
-import express, { Application } from "express";
+import express from "express";
 import { ApplicationContext, RouterContext } from "../context";
 
-export interface RouterProps {
+export interface RouterProps extends React.PropsWithChildren<{}> {
   routerDefaultOptions?: express.RouterOptions;
   path: string;
   reference?: (routerRef: express.Router) => void;

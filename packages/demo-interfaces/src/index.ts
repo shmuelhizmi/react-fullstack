@@ -1,4 +1,4 @@
-import { View } from "@react-fullstack/fullstack";
+import { View } from "@react-fullstack/fullstack/shared";
 
 export const Views = {
   Home: {} as View<{ username: string; logout: () => void; info: { feeling: 'goood' | 'bad' }; moodSwing: () => void }>,

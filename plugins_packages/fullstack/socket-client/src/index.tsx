@@ -1,7 +1,7 @@
 import React from "react";
-import { Views, ViewsToComponents } from "@react-fullstack/fullstack/lib/Views";
-import { Client as ClientBase, emit } from "@react-fullstack/fullstack";
+import {  ViewsToComponents, Client as ClientBase } from "@react-fullstack/fullstack/client";
 import { connect } from "socket.io-client";
+import { emit, Views } from "@react-fullstack/fullstack/shared";
 
 interface Props<ViewsInterface extends Views> {
   /**

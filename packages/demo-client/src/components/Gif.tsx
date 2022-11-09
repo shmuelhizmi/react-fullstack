@@ -1,5 +1,5 @@
 import React from "react";
-import { Component } from "@react-fullstack/fullstack";
+import { Component } from "@react-fullstack/fullstack/client";
 import { Views } from "@react-fullstack/demo-interfaces";
 
 class Gif extends Component<typeof Views["Gif"]> {

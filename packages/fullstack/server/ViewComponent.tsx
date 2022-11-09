@@ -1,14 +1,14 @@
 import React from "react";
 import { v4 } from "uuid";
-import App from "../App";
-import { AppContext } from "../Contexts";
+import App from "./App";
+import { AppContext } from "./contexts";
 
 const ViewParentContext = React.createContext<
   { uid: string; childIndex: number } | undefined
 >(undefined);
 
 class ViewComponent<
-  Props extends { name: string; props: any }
+  Props extends React.PropsWithChildren<{ name: string; props: any }>
 > extends React.Component<Props> {
   static contextType = AppContext;
   declare context: App<any>;

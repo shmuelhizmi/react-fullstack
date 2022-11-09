@@ -14,7 +14,7 @@
     "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "@types/react": "^17.0.0",
+    "@types/react": "18.0.25",
     "@types/uuid": "3.4.3",
     "typescript": "3.9.7"
   },

@@ -3,7 +3,7 @@ import express, { Application } from "express";
 import { Server as HTTPServer } from "http";
 import { ApplicationContext } from "../context";
 
-export interface ServerProps {
+export interface ServerProps extends React.PropsWithChildren<{}> {
   reference?: (appRef: Application, httpServerRef?: HTTPServer) => void;
   then?: () => void;
   port: number;

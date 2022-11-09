@@ -2,7 +2,7 @@ import React from "react";
 import { Application, RequestHandler } from "express";
 import { ApplicationContext, RouterContext } from "../context";
 
-export interface MiddlewareProps {
+export interface MiddlewareProps extends React.PropsWithChildren<{}> {
   /**
    * the path the middleware will handle
    */

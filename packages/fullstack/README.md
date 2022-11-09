@@ -47,7 +47,7 @@ Example:
 ```ts
 // shared/src/index.ts
 
-import { View } from "@react-fullstack/fullstack";
+import { View } from "@react-fullstack/fullstack/shared";
 
 export const Views = {
   Home: {} as View<{ username: string; logout: () => void }>, // Home layout component and its props
@@ -63,7 +63,7 @@ next, after we finished declaring all of our client components in our shared pac
 // server/src/index
 import React from "react";
 import { Render } from "@react-fullstack/render";
-import { ViewsProvider } from "@react-fullstack/fullstack";
+import { ViewsProvider } from "@react-fullstack/fullstack/server";
 import { Views } from "shared-package"; // import our shared package
 import { Server } from "@react-fullstack/fullstack-socket-server";
 
@@ -127,7 +127,7 @@ after we finished adding all of our business logic to the server its now time to
 
 import React from "react";
 import ReactDOM from "react-dom";
-import { Component } from "@react-fullstack/fullstack";
+import { Component } from "@react-fullstack/fullstack/client";
 import { Client } from "@react-fullstack/fullstack-socket-client"
 import { Views } from "shared-package";
 

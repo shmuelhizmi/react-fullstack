@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@react-fullstack/fullstack": "^0.3.0",
-    "@types/react": "^17.0.0",
+    "@types/react": "18.0.25",
     "@types/react-dom": "^17.0.0",
     "@types/socket.io": "2.1.13",
     "typescript": "3.9.7"

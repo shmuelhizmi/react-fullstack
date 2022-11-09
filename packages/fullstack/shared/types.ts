@@ -1,3 +1,5 @@
+import React from "react";
+
 export interface Transport<Events extends object> {
   emit: <T extends keyof Events>(event: T, message?: Events[T]) => void;
   on: <T extends keyof Events>(
@@ -72,3 +74,9 @@ export type ExistingSharedViewData = ViewDataBase & {
 };
 
 export type AppTransport = Transport<AppEvents>;
+
+export type Views = Record<string, View<any>>;
+
+export type View<Props extends Record<string, any>> = {
+  props: React.PropsWithChildren<Props>;
+};

@@ -1,10 +1,8 @@
 import React from "react";
 import { v4 } from "uuid";
-import { Views, ViewsToServerComponents } from "./Views";
-import ViewComponent from "./component/ViewComponent";
-import { AppContext } from "./Contexts";
-import { ViewData, ExistingSharedViewData, Prop, Transport } from "./types";
-import { DecompileTransport, decompileTransport } from "./decompiled-transport";
+import { AppContext } from "./contexts";
+import { ViewData, ExistingSharedViewData, Prop, Transport, Views, DecompileTransport, decompileTransport } from "../shared";
+import { deeplyEqual } from "./utils";
 
 interface AppParameters<ViewsInterface extends Views> {
   children: () => JSX.Element;
@@ -14,54 +12,7 @@ interface AppParameters<ViewsInterface extends Views> {
   transportIsClient: boolean;
 }
 
-const viewProxy = new Proxy({} as Record<string, any>, {
-  get: (target, name) => {
-    if (typeof name !== 'string') {
-      throw new Error('trying to access a view with a non string name');
-    }
-    if (!target[name]) {
-      target[name] = (props: any) => {
-        return (
-          <ViewComponent name={name} props={props} />
-        )
-      }
-    }
-    return target[name];
-  }
-}) as any;
 
-export const ViewsProvider = <ViewsInterface extends Views>(props: {
-  children: (views: ViewsToServerComponents<ViewsInterface>) => JSX.Element;
-}) => {
-  return (
-    <AppContext.Consumer>
-      {(app) => {
-        if (!app) {
-          return;
-        }
-        return props.children(viewProxy);
-      }}
-    </AppContext.Consumer>
-  );
-};
-
-function deeplyEqual(x: any, y: any) {
-  if (x === y) {
-    return true;
-  }
-  if (typeof x == "object" && x != null && typeof y == "object" && y != null) {
-    if (Object.keys(x).length != Object.keys(y).length) return false
-    for (var prop in x) {
-      if (y.hasOwnProperty(prop)) {
-        if (!deeplyEqual(x[prop], y[prop])) return false;
-      } else {
-        return false;
-      }
-    }
-    return true;
-  }
-  return false;
-}
 
 class App<ViewsInterface extends Views> extends React.Component<
   AppParameters<ViewsInterface>

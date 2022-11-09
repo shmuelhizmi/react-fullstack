@@ -1,8 +1,7 @@
 import React from "react";
 import { v4 } from "uuid";
-import { Views, ViewsToComponents } from "../Views";
-import { ExistingSharedViewData, ShareableViewData, Transport } from "../types";
-import { decompileTransport } from "../decompiled-transport";
+import { ViewsToComponents } from "./types";
+import { ExistingSharedViewData, ShareableViewData, Transport, Views, decompileTransport } from "../shared";
 
 interface ClientState {
   runningViews: ExistingSharedViewData[];
@@ -24,7 +23,7 @@ const stringifyWithoutCircular = (json: any[]) => {
       return value;
     };
   };
-  
+
   return JSON.stringify(json, getCircularReplacer());
 }
 class Client<ViewsInterface extends Views> extends React.Component<
@@ -59,7 +58,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
               runningView.props.push(newProp);
             })
           } else {
-            state.runningViews.push({...view, props: view.props.create });
+            state.runningViews.push({ ...view, props: view.props.create });
           }
           return { runningViews: [...state.runningViews] };
         });

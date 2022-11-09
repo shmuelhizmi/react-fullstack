@@ -1,11 +1,7 @@
 import React from "react";
-import Component from "./component/Component";
+import { Views } from "../shared";
 
-export type Views = Record<string, View<any>>;
 
-export type View<Props extends Record<string, any>> = {
-  props: Props;
-};
 
 export type ViewsToComponents<ViewsToTransform extends Views> = {
   [ViewName in keyof ViewsToTransform]:
@@ -13,11 +9,7 @@ export type ViewsToComponents<ViewsToTransform extends Views> = {
     | React.FunctionComponent<TransformViewProps<ViewsToTransform[ViewName]["props"]>>;
 };
 
-export type ViewsToServerComponents<ViewsToTransform extends Views> = {
-  [ViewName in keyof ViewsToTransform]: React.FunctionComponent<
-    ViewsToTransform[ViewName]["props"]
-  >;
-};
+
 
 export type TransformViewProps<Props extends Record<string, any>> = {
   [Key in keyof Props]: MapResultToPromise<Props[Key]>;

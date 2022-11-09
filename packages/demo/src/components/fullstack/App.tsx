@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ViewsProvider } from "@react-fullstack/fullstack";
+import { ViewsProvider } from "@react-fullstack/fullstack/server";
 import { Views } from "@react-fullstack/demo-interfaces";
 import { Server } from "@react-fullstack/fullstack-socket-server";
 

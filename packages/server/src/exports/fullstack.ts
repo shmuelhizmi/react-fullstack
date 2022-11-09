@@ -1,8 +1,7 @@
 export {
 	AppContext as FullstackAppContext,
-	Client as FullstackClient,
-	Component as FullstackComponent,
-	View as FullstackView,
 	ViewsProvider as FullstackViewProvider,
-	ViewsToComponents as FullstackViewToComponent,
-} from "@react-fullstack/fullstack"
+} from "@react-fullstack/fullstack/server"
+export {
+	View as FullstackView,
+} from "@react-fullstack/fullstack/shared"

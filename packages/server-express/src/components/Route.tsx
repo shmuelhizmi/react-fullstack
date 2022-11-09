@@ -2,7 +2,7 @@ import React from "react";
 import { Application, RequestHandler } from "express";
 import { ApplicationContext, RouterContext } from "../context";
 
-export interface RouteProps {
+export interface RouteProps extends React.PropsWithChildren<{}> {
   /**
    * the path of the route
    */
