@@ -16,7 +16,7 @@
   "devDependencies": {
     "@types/react": "18.0.25",
     "@types/uuid": "3.4.3",
-    "typescript": "3.9.7"
+    "typescript": "4.8.4"
   },
   "keywords": [
     "react",

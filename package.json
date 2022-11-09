@@ -1,12 +1,7 @@
 {
   "name": "@react-fullstack/root",
   "private": true,
-  "devDependencies": {
-    "lerna": "^3.20.2"
-  },
-  "scripts": {
-    "prepare": "lerna run prepare"
-  },
+  "packageManager": "pnpm@7",
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/shmuelhizmi/react-fullstack.git",

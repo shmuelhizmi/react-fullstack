@@ -9,7 +9,7 @@
     "prepare": "npm run build"
   },
   "peerDependencies": {
-    "@react-fullstack/fullstack": ">=0.2.0",
+    "@react-fullstack/fullstack": ">=0.3.0",
     "react": ">=17.0.0",
     "react-dom": ">=17.0.0"
   },
@@ -17,11 +17,11 @@
     "socket.io-client": "4.0.2"
   },
   "devDependencies": {
-    "@react-fullstack/fullstack": "^0.3.0",
+    "@react-fullstack/fullstack": "workspace:*",
     "@types/react": "18.0.25",
     "@types/react-dom": "^17.0.0",
     "@types/socket.io-client": "1.4.36",
-    "typescript": "3.9.7"
+    "typescript": "4.8.4"
   },
   "keywords": [
     "react",

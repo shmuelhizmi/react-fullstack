@@ -9,12 +9,12 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@react-fullstack/demo-interfaces": "^0.3.0",
-    "@react-fullstack/fullstack": "^0.3.0",
-    "@react-fullstack/fullstack-socket-server": "^0.3.0",
-    "@react-fullstack/plugin-server-side-rendering": "^0.3.0",
-    "@react-fullstack/render": "^0.3.0",
-    "@react-fullstack/server-express": "^0.3.0",
+    "@react-fullstack/demo-interfaces": "workspace:*",
+    "@react-fullstack/fullstack": "workspace:*",
+    "@react-fullstack/fullstack-socket-server": "workspace:*",
+    "@react-fullstack/plugin-server-side-rendering": "workspace:*",
+    "@react-fullstack/render": "workspace:*",
+    "@react-fullstack/server-express": "workspace:*",
     "express": "^4.17.1",
     "react": "18.2.0",
     "socket.io": "4.0.2"
@@ -23,7 +23,7 @@
     "@types/express": "^4.11.1",
     "@types/react": "18.0.25",
     "ts-node": "^8.10.2",
-    "typescript": "^3.9.7"
+    "typescript": "4.8.4"
   },
   "keywords": [
     "react",

@@ -4,9 +4,9 @@
   "private": true,
   "dependencies": {
     "@babel/core": "7.9.0",
-    "@react-fullstack/demo-interfaces": "^0.3.0",
-    "@react-fullstack/fullstack": "^0.3.0",
-    "@react-fullstack/fullstack-socket-client": "^0.3.0",
+    "@react-fullstack/demo-interfaces": "workspace:*",
+    "@react-fullstack/fullstack": "workspace:*",
+    "@react-fullstack/fullstack-socket-client": "workspace:*",
     "@svgr/webpack": "4.3.3",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
@@ -70,7 +70,7 @@
     "@types/react": "18.0.25",
     "@types/react-dom": "^17.0.0",
     "@types/socket.io-client": "1.4.36",
-    "typescript": "~3.7.2"
+    "typescript": "4.8.4"
   },
   "scripts": {
     "start": "node scripts/start.js",
