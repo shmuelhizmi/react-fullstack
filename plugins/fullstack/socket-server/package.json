@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/fullstack-socket-server",
-  "version": "0.3.0",
+  "version": "0.3.1-alpha.5",
   "description": "create node express servers using react! - socket server",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,7 +9,7 @@
     "prepare": "npm run build"
   },
   "peerDependencies": {
-    "@react-fullstack/fullstack": ">=0.2.0",
+    "@react-fullstack/fullstack": ">=0.3.1-alpha.5",
     "react": ">=18.0.0"
   },
   "dependencies": {
