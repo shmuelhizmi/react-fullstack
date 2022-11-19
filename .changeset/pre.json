@@ -1,0 +1,11 @@
+{
+  "mode": "pre",
+  "tag": "alpha",
+  "initialVersions": {
+    "@react-fullstack/fullstack": "0.3.0",
+    "@react-fullstack/render": "0.3.0",
+    "@react-fullstack/server": "0.3.0",
+    "@react-fullstack/server-express": "0.3.0"
+  },
+  "changesets": []
+}
