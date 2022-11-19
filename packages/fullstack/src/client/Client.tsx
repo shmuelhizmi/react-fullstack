@@ -1,7 +1,6 @@
 import React from "react";
-import { v4 } from "uuid";
 import { ViewsToComponents } from "./types";
-import { ExistingSharedViewData, ShareableViewData, Transport, Views, decompileTransport } from "../shared";
+import { ExistingSharedViewData, ShareableViewData, Transport, Views, decompileTransport, randomId } from "../shared";
 
 interface ClientState {
   runningViews: ExistingSharedViewData[];
@@ -92,7 +91,7 @@ class Client<ViewsInterface extends Views> extends React.Component<
         [
           (props[prop.name] = (...args: any) => {
             return new Promise((resolve) => {
-              const requestUid = v4();
+              const requestUid = randomId();
               this.transport.on(
                 "respond_to_event",
                 ({

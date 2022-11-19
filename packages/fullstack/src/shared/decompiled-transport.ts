@@ -2,6 +2,8 @@ import { CompiledAppEvents } from "./compiledTypes";
 import { EventContent, Events } from "./enum";
 import { AppEvents, Prop, Transport } from "./types";
 
+const nullIfEmpty = <T>(arr: T[]) => arr.length === 0 ? undefined : arr;
+
 const emitHandlerMap: {
     [Key in keyof typeof map]: (data: AppEvents[Key]) => CompiledAppEvents[(typeof map)[Key]];
 } = {
@@ -31,19 +33,19 @@ const emitHandlerMap: {
             [EventContent.Name]: data.view.name,
             [EventContent.ParentUid]: data.view.parentUid,
             [EventContent.Props]: {
-                [EventContent.Create]: data.view.props.create.map((prop) => ({
+                [EventContent.Create]: nullIfEmpty(data.view.props.create)?.map((prop) => ({
                     [EventContent.Data]: prop.type === "data" ? prop.data : undefined,
                     [EventContent.Name]: prop.name,
                     [EventContent.Type]: prop.type === "data" ? EventContent.Data : EventContent.Event,
                     [EventContent.Uid]: prop.type === "event" ? prop.uid : undefined,
                 })),
-                [EventContent.Merge]: data.view.props.merge.map((prop) => ({
+                [EventContent.Merge]: nullIfEmpty(data.view.props.merge)?.map((prop) => ({
                     [EventContent.Data]: prop.type === "data" ? prop.data : undefined,
                     [EventContent.Name]: prop.name,
                     [EventContent.Type]: prop.type === "data" ? EventContent.Data : EventContent.Event,
                     [EventContent.Uid]: prop.type === "event" ? prop.uid : undefined,
                 })),
-                [EventContent.Delete]: data.view.props.delete,
+                [EventContent.Delete]: nullIfEmpty(data.view.props.delete),
             },
             [EventContent.Uid]: data.view.uid,
             [EventContent.isRoot]: data.view.isRoot,
@@ -95,7 +97,7 @@ const onHandlerMap: {
     },
     [Events.RequestEvent]: (data) => {
         return {
-            eventArguments: data[EventContent.EventArgs],
+            eventArguments: data[EventContent.EventArgs] || [],
             eventUid: data[EventContent.EventUid],
             uid: data[EventContent.Uid],
         }

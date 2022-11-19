@@ -25,7 +25,7 @@ export interface CompiledAppEvents {
     [EventContent.EventUid]: string;
   };
   [Events.RequestEvent]: {
-    [EventContent.EventArgs]: any[];
+    [EventContent.EventArgs]?: any[];
     [EventContent.Uid]: string;
     [EventContent.EventUid]: string;
   };

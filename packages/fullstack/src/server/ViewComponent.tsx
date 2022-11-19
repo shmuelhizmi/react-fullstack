@@ -1,5 +1,5 @@
 import React from "react";
-import { v4 } from "uuid";
+import { randomId } from "../shared";
 import App from "./App";
 import { AppContext } from "./contexts";
 
@@ -12,7 +12,7 @@ class ViewComponent<
 > extends React.Component<Props> {
   static contextType = AppContext;
   declare context: App;
-  private uid = v4();
+  private uid = randomId();
   private mountState: "premounted" | "mounted" | "unmounted" = "premounted";
   componentDidMount() {
     this.mountState = "mounted";

@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useRef } from "react";
 import SocketIO from "socket.io";
 import { Transport } from "@react-fullstack/fullstack/shared";
 import type { Server as ServerBase } from "@react-fullstack/fullstack/server";
+// @ts-ignore
+import { Server as EiowsServer } from "eiows"
 
 interface Props {
   /**
@@ -27,7 +29,9 @@ function SocketServer (props: Props & { ServerBase: typeof ServerBase }) {
   const { ServerBase } = props;
   const serverRef = useRef<SocketIO.Server<any, any>>();
   if (!serverRef.current) {
-    const server = new SocketIO.Server(props.socketOptions);
+    const server = new SocketIO.Server(props.socketOptions, {
+      wsEngine: EiowsServer,
+    });
     server.setMaxListeners(Infinity);
     server.on("connection", (socket) => {
       socket.setMaxListeners(Infinity);

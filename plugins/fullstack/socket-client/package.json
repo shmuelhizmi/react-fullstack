@@ -9,6 +9,7 @@
     },
     "./package.json": "./package.json"
   },
+  "types": "dist/esm/index.d.ts",
   "scripts": {
     "build": "tsc --module commonjs --outDir dist/cjs && tsc --module esnext --outDir dist/esm",
     "start": "concurrently \"tsc -w --module commonjs --outDir dist/cjs\" \"tsc -w --module esnext --outDir dist/esm\"",

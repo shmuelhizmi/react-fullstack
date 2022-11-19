@@ -5,7 +5,7 @@
   "main": "src/index.tsx",
   "private": true,
   "scripts": {
-    "start": "ts-node .",
+    "start": "ts-node --esm .",
     "build": "tsc"
   },
   "dependencies": {

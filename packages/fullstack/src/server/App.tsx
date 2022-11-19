@@ -1,7 +1,6 @@
 import React from "react";
-import { v4 } from "uuid";
 import { AppContext } from "./contexts";
-import { ViewData, ExistingSharedViewData, Prop, Transport, DecompileTransport, decompileTransport } from "../shared";
+import { ViewData, ExistingSharedViewData, Prop, Transport, DecompileTransport, decompileTransport, randomId } from "../shared";
 import { deeplyEqual } from "./utils";
 
 interface AppProps {
@@ -217,7 +216,7 @@ class App extends React.Component<
   private registerViewEvent = (
     event: (...args: any) => any | Promise<any>
   ): string => {
-    const eventUid = v4();
+    const eventUid = randomId();
     this.viewEvents.set(eventUid, event);
     return eventUid;
   };
