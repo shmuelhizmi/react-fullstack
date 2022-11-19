@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/fullstack",
-  "version": "0.3.1-alpha.5",
+  "version": "0.3.1-alpha.6",
   "description": "run your react app logic on the server",
   "exports": {
     "./server": {

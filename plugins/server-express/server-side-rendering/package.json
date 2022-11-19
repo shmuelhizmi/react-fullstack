@@ -1,6 +1,6 @@
 {
   "name": "@react-fullstack/plugin-server-side-rendering",
-  "version": "0.3.1-alpha.5",
+  "version": "0.3.1-alpha.6",
   "description": "server side rendring component for @react-fullstack/server-express .",
   "main": "lib/index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "prepare": "npm run build"
   },
   "peerDependencies": {
-    "@react-fullstack/server-express": ">=0.3.1-alpha.5",
+    "@react-fullstack/server-express": ">=0.3.1-alpha.6",
     "express": ">=4.0.0",
     "react": ">=18.0.0"
   },

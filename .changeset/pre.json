@@ -11,6 +11,7 @@
     "@react-fullstack/plugin-server-side-rendering": "0.3.0"
   },
   "changesets": [
+    "green-goats-report",
     "sweet-laws-change"
   ]
 }

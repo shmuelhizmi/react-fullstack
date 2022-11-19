@@ -1,5 +1,13 @@
 # @react-fullstack/plugin-server-side-rendering
 
+## 0.3.1-alpha.6
+
+### Patch Changes
+
+- fix single instance duble event bug
+- Updated dependencies
+  - @react-fullstack/server-express@0.3.1-alpha.6
+
 ## 0.3.1-alpha.5
 
 ### Patch Changes
