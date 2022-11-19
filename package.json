@@ -16,5 +16,8 @@
     "**/react-native/**",
     "**/expo",
     "**/expo/**"
-  ]
+  ],
+  "dependencies": {
+    "@changesets/cli": "^2.25.2"
+  }
 }
