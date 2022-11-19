@@ -10,6 +10,7 @@ const App = () => {
   const [feeling, setFeeling] = useState<"goood" | "bad">("goood");
   const [name, setName] = useState("");
   const [_, setNothing] = useState(0);
+  const [text, setText] = useState("");
   useEffect(() => {
     const doNothing = () => {
       setTimeout(() => {
@@ -20,10 +21,12 @@ const App = () => {
     doNothing();
   }, []);
   return (
-    <ViewsProvider<typeof Views>>
-      {({ Home, Login, Prompt, Gif }) => {
+    <ViewsProvider<Views>>
+      {({ Home, Login, Prompt, Gif, Input, Button }) => {
         return (
           <>
+            <Input onChange={setText} value={text} />
+            <Button text="Click me" onClick={() => setText(text + feeling)} />
             {location === "home" && (
               <Home info={{ feeling }} moodSwing={() => {
                 setFeeling(
@@ -63,9 +66,14 @@ const App = () => {
 };
 
 const ServerApp = () => (
-  <SocketServer port={8585} socketOptions={{ cors: { origin: "*" } }}>
-    {() => <App />}
-  </SocketServer>
+  <>
+    <SocketServer port={8585} socketOptions={{ cors: { origin: "*" } }}>
+      {() => <App />}
+    </SocketServer>
+    <SocketServer port={8584} singleInstance socketOptions={{ cors: { origin: "*" } }}>
+      {() => <App />}
+    </SocketServer>
+  </>
 );
 
 export default ServerApp;

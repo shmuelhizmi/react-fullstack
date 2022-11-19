@@ -50,7 +50,6 @@ function SocketServer (props: Props & { ServerBase: typeof ServerBase }) {
     return {
       transport: {
         on: (event: string, callback: (...args: any[]) => void) => {
-          server.sockets.addListener(event, callback);
           if (event === "connection") {
             server.on(event, callback);
           }
