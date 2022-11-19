@@ -9,7 +9,7 @@
     "prepare": "npm run build"
   },
   "peerDependencies": {
-    "react": ">=17.0.0"
+    "react": ">=18.0.0"
   },
   "dependencies": {
     "@react-fullstack/fullstack": "workspace:*"

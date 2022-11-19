@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { ViewsProvider } from "@react-fullstack/fullstack/server";
+import { ViewsProvider, Server } from "@react-fullstack/fullstack/server";
 import { Views } from "@react-fullstack/demo-interfaces";
-import { Server } from "@react-fullstack/fullstack-socket-server";
+import { createSocketServer } from "@react-fullstack/fullstack-socket-server";
+
+const SocketServer = createSocketServer(Server);
 
 const App = () => {
   const [location, setLocation] = useState<"home" | "error" | "login">("login");
@@ -61,9 +63,9 @@ const App = () => {
 };
 
 const ServerApp = () => (
-  <Server port={8585} socketOptions={{ cors: { origin: "*" } }} views={Views}>
+  <SocketServer port={8585} socketOptions={{ cors: { origin: "*" } }}>
     {() => <App />}
-  </Server>
+  </SocketServer>
 );
 
 export default ServerApp;

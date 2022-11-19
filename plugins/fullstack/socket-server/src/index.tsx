@@ -1,9 +1,9 @@
-import React from "react";
-import { App } from "@react-fullstack/fullstack/server";
+import React, { useCallback, useEffect, useRef } from "react";
 import SocketIO from "socket.io";
-import { Transport, Views } from "@react-fullstack/fullstack/shared";
+import { Transport } from "@react-fullstack/fullstack/shared";
+import type { Server as ServerBase } from "@react-fullstack/fullstack/server";
 
-interface Props<ViewsInterface extends Views> {
+interface Props {
   /**
    * The port the socket will run on.
    */
@@ -12,10 +12,6 @@ interface Props<ViewsInterface extends Views> {
    * The server react app
    */
   children: () => JSX.Element;
-  /**
-   * Object containing view shared component
-   */
-  views: ViewsInterface;
   /**
    * share one app across all clients.
    */
@@ -27,78 +23,57 @@ interface Props<ViewsInterface extends Views> {
   socketOptions?: Partial<SocketIO.ServerOptions>;
 }
 
-interface State<ViewsInterface extends Views> {
-  apps: { [id: string]: SocketIO.Socket };
-}
-
-/**
- * "@react-fullstack/fullstack" socket server
- */
-class Server<ViewsInterface extends Views> extends React.Component<
-  Props<ViewsInterface>,
-  State<ViewsInterface>
-> {
-  server: SocketIO.Server;
-  mainAppRef?: App<ViewsInterface>;
-  constructor(props: Props<ViewsInterface>) {
-    super(props);
-    this.server = new SocketIO.Server(this.props.socketOptions);
-  }
-
-  state: State<ViewsInterface> = { apps: {} };
-
-  componentDidMount = () => {
-    this.server.sockets.setMaxListeners(0);
-    this.server.on("connection", (socket) => {
-      if (this.props.singleInstance) {
-        if (this.mainAppRef) {
-          socket.setMaxListeners(0);
-          this.mainAppRef.addClient(socket as Transport<any>);
-          socket.on("disconnect", () => {
-            if (this.mainAppRef) {
-              this.mainAppRef.removeClient(socket as Transport<any>);
-            }
-          });
-        }
-      } else {
-        const { id } = socket;
-        this.state.apps[id] = socket;
-        this.forceUpdate();
-        socket.on("disconnect", () => {
-          delete this.state.apps[id];
-          this.forceUpdate();
-        });
-      }
+function SocketServer (props: Props & { ServerBase: typeof ServerBase }) {
+  const { ServerBase } = props;
+  const serverRef = useRef<SocketIO.Server<any, any>>();
+  if (!serverRef.current) {
+    const server = new SocketIO.Server(props.socketOptions);
+    server.setMaxListeners(Infinity);
+    server.on("connection", (socket) => {
+      socket.setMaxListeners(Infinity);
     });
-    this.server.listen(this.props.port);
-  };
-
-  componentWillUnmount = () => {
-    if (this.server) this.server.close();
-  };
-
-  render = () => (
-    <>
-      <App<ViewsInterface>
-        ref={(app) => { this.mainAppRef = app || undefined }}
-        children={this.props.children}
-        paused={!this.props.singleInstance}
-        views={this.props.views}
-        transportIsClient={false}
-        transport={this.server.sockets as Transport<any>}
-        />
-      {Object.entries(this.state.apps).map(([id, socket]) => (
-        <App<ViewsInterface>
-          key={id}
-          paused={false}
-          transportIsClient
-          children={this.props.children}
-          views={this.props.views}
-          transport={socket as Transport<any>}
-        />
-      ))}
-    </>
-  );
+    server.listen(props.port);
+    serverRef.current = server;
+  }
+  const server = serverRef.current;
+  useEffect(() => {
+    return () => {
+      if (server) server.close();
+    };
+  }, []);
+  const getProps = useCallback(() => {
+    const { children, singleInstance } = props;
+    return {
+      transport: {
+        on: (event: string, callback: (...args: any[]) => void) => {
+          server.sockets.addListener(event, callback);
+          if (event === "connection") {
+            server.on(event, callback);
+          }
+        },
+        emit: (event: string, ...args: any[]) => {
+          server.sockets.emit(event, ...args);
+        },
+        off: (event: string, callback: (...args: any[]) => void) => {
+          server.sockets.removeListener(event, callback);
+          if (event === "connection") {
+            server.off(event, callback);
+          }
+        },
+      } as Transport<any>,
+      singleInstance,
+      children,
+    };
+  }, [props.children, props.singleInstance]);
+  return <ServerBase {...getProps()} />;
 }
 
-export { Server };
+function createSocketServer(
+  Server: typeof ServerBase
+) {
+  return (props: Props) => <SocketServer {...props} ServerBase={Server} />;
+}
+
+export {
+  createSocketServer
+};

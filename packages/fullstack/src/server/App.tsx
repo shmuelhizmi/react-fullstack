@@ -1,28 +1,27 @@
 import React from "react";
 import { v4 } from "uuid";
 import { AppContext } from "./contexts";
-import { ViewData, ExistingSharedViewData, Prop, Transport, Views, DecompileTransport, decompileTransport } from "../shared";
+import { ViewData, ExistingSharedViewData, Prop, Transport, DecompileTransport, decompileTransport } from "../shared";
 import { deeplyEqual } from "./utils";
 
-interface AppParameters<ViewsInterface extends Views> {
+interface AppProps {
   children: () => JSX.Element;
-  views: ViewsInterface;
-  transport: Transport<Record<string, any>>;
+  transport: Transport<any>;
   paused: boolean;
   transportIsClient: boolean;
 }
 
 
 
-class App<ViewsInterface extends Views> extends React.Component<
-  AppParameters<ViewsInterface>
+class App extends React.Component<
+  AppProps
 > {
   private server: DecompileTransport;
-  private clients: Transport<Record<string, any>>[] = [];
+  private clients: Transport<any>[] = [];
   private existingSharedViews: ExistingSharedViewData[] = [];
   private viewEvents = new Map<string, (...args: any) => any | Promise<any>>();
   private cleanUpFunctions: Function[] = [];
-  constructor(props: AppParameters<ViewsInterface>) {
+  constructor(props: AppProps) {
     super(props);
     this.server = decompileTransport(props.transport);
   }
@@ -41,12 +40,12 @@ class App<ViewsInterface extends Views> extends React.Component<
   componentWillUnmount = () => {
     this.cleanUpFunctions.forEach((f) => f());
   };
-  public addClient = (client: Transport<Record<string, any>>) => {
+  public addClient = (client: Transport<any>) => {
     const clientTransport = decompileTransport(client);
     this.clients.push(client);
     this.registerSocketListener(clientTransport);
   };
-  public removeClient = (client: Transport<Record<string, any>>) => {
+  public removeClient = (client: Transport<any>) => {
     this.clients = this.clients.filter(
       (currentClient) => currentClient !== client
     );

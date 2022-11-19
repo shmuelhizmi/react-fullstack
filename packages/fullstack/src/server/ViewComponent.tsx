@@ -11,7 +11,7 @@ class ViewComponent<
   Props extends React.PropsWithChildren<{ name: string; props: any }>
 > extends React.Component<Props> {
   static contextType = AppContext;
-  declare context: App<any>;
+  declare context: App;
   private uid = v4();
   private mountState: "premounted" | "mounted" | "unmounted" = "premounted";
   componentDidMount() {
