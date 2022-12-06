@@ -24,6 +24,10 @@ class App extends React.Component<
     super(props);
     this.server = decompileTransport(props.transport);
   }
+
+  get views() {
+    return this.existingSharedViews;
+  }
   render = () =>
     !this.props.paused && (
       <AppContext.Provider value={this}>

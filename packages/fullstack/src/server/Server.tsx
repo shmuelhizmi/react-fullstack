@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useEffect, useRef } from "react";
-import { AppTransport, Transport } from "../shared";
+import {
+  Transport,
+  ViewsRenderer,
+} from "../shared";
 import App from "./App";
 
-interface Props<
+export interface ServerProps<
   TransportClientEvents extends { disconnect: any },
   TransportServerEvents extends {
     connection: Transport<TransportClientEvents> & { id: string };
@@ -21,14 +24,37 @@ interface Props<
    * main server commination transport
    */
   transport: Transport<TransportServerEvents>;
+  /**
+   * instance render handler
+   * could be used to render the app into a components tree (for ssr)
+   */
+  instanceRenderHandler?: ServerInstanceRenderHandler;
 }
+
+const setApp = Symbol("setApp");
+
+export function createInstanceRenderHandler() {
+  let app: App;
+  return {
+    [setApp]: (newApp: App) => {
+      app = newApp;
+    },
+    render(views: Record<string, React.ComponentType<any>>) {
+      return <ViewsRenderer viewsData={app?.views || []} views={views} />;
+    },
+  };
+}
+
+export type ServerInstanceRenderHandler = ReturnType<
+  typeof createInstanceRenderHandler
+>;
 
 export function Server<
   TransportClientEvents extends { disconnect: any },
   TransportServerEvents extends {
     connection: Transport<TransportClientEvents> & { id: string };
   }
->(props: Props<TransportClientEvents, TransportServerEvents>) {
+>(props: ServerProps<TransportClientEvents, TransportServerEvents>) {
   const { children, singleInstance, transport } = props;
   const app = useRef<App>();
   const [clients, setClients] = useState<Record<string, Transport<any>>>({});
@@ -62,6 +88,7 @@ export function Server<
     });
   }, [singleInstance, transport]);
 
+
   return (
     <>
       <App
@@ -71,6 +98,7 @@ export function Server<
         children={children}
         ref={(ref) => {
           app.current = ref || undefined;
+          if (props.instanceRenderHandler) props.instanceRenderHandler[setApp](ref!);
         }}
       />
       {!singleInstance &&

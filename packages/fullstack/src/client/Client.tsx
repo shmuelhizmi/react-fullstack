@@ -1,14 +1,30 @@
 import React from "react";
 import { ViewsToComponents } from "./types";
-import { ExistingSharedViewData, ShareableViewData, Transport, Views, decompileTransport, randomId } from "../shared";
+import {
+  ExistingSharedViewData,
+  ShareableViewData,
+  Transport,
+  Views,
+  decompileTransport,
+  randomId,
+  ViewsRenderer,
+} from "../shared";
 
 interface ClientState {
   runningViews: ExistingSharedViewData[];
 }
 
 const stringifyWithoutCircular = (json: any[]) => {
-  if (json.some((child) => child instanceof Event || (typeof child === 'object' && '_reactName' in child))) {
-    throw new Error("passing js events to the server is prohibited, make sure you are not passing a callback's directly to a dom element");
+  if (
+    json.some(
+      (child) =>
+        child instanceof Event ||
+        (typeof child === "object" && "_reactName" in child)
+    )
+  ) {
+    throw new Error(
+      "passing js events to the server is prohibited, make sure you are not passing a callback's directly to a dom element"
+    );
   }
   const getCircularReplacer = () => {
     const seen = new WeakSet();
@@ -24,7 +40,7 @@ const stringifyWithoutCircular = (json: any[]) => {
   };
 
   return JSON.stringify(json, getCircularReplacer());
-}
+};
 class Client<ViewsInterface extends Views> extends React.Component<
   {
     transport: Transport<Record<string, any>>;
@@ -38,12 +54,9 @@ class Client<ViewsInterface extends Views> extends React.Component<
   };
   transport = decompileTransport(this.props.transport);
   componentDidMount = () => {
-    this.transport.on(
-      "update_views_tree",
-      ({ views }) => {
-        this.setState({ runningViews: views });
-      }
-    );
+    this.transport.on("update_views_tree", ({ views }) => {
+      this.setState({ runningViews: views });
+    });
     this.transport.on(
       "update_view",
       ({ view }: { view: ShareableViewData }) => {
@@ -52,10 +65,12 @@ class Client<ViewsInterface extends Views> extends React.Component<
             (currentView) => currentView.uid === view.uid
           );
           if (runningView) {
-            runningView.props = runningView.props.filter((prop) => !view.props.delete.includes(prop.name));
+            runningView.props = runningView.props.filter(
+              (prop) => !view.props.delete.includes(prop.name)
+            );
             view.props.create.forEach((newProp) => {
               runningView.props.push(newProp);
-            })
+            });
           } else {
             state.runningViews.push({ ...view, props: view.props.create });
           }
@@ -63,76 +78,57 @@ class Client<ViewsInterface extends Views> extends React.Component<
         });
       }
     );
-    this.transport.on(
-      "delete_view",
-      ({ viewUid }: { viewUid: string }) => {
-        this.setState((state) => {
-          const runningViewIndex = state.runningViews.findIndex(
-            (view) => view.uid === viewUid
-          );
-          if (runningViewIndex !== -1) {
-            state.runningViews.splice(runningViewIndex, 1);
-            return { runningViews: [...state.runningViews] };
-          }
-        });
-      }
-    );
+    this.transport.on("delete_view", ({ viewUid }: { viewUid: string }) => {
+      this.setState((state) => {
+        const runningViewIndex = state.runningViews.findIndex(
+          (view) => view.uid === viewUid
+        );
+        if (runningViewIndex !== -1) {
+          state.runningViews.splice(runningViewIndex, 1);
+          return { runningViews: [...state.runningViews] };
+        }
+      });
+    });
     if (this.props.requestViewTreeOnMount) {
       this.transport.emit("request_views_tree");
     }
-  }
-  renderView = (view: ExistingSharedViewData): JSX.Element => {
-    const componentToRender = this.props.views[view.name];
-    const props: any = { key: view.uid };
-    view.props.forEach((prop) => {
-      if (prop.type === "data") {
-        props[prop.name] = prop.data;
-      } else if (prop.type === "event")
-        [
-          (props[prop.name] = (...args: any) => {
-            return new Promise((resolve) => {
-              const requestUid = randomId();
-              this.transport.on(
-                "respond_to_event",
-                ({
-                  data,
-                  uid,
-                  eventUid,
-                }: {
-                  data: any;
-                  uid: string;
-                  eventUid: string;
-                }) => {
-                  if (uid === requestUid && eventUid === prop.uid) {
-                    resolve(data);
-                  }
-                }
-              );
-              this.transport.emit("request_event", {
-                eventArguments: JSON.parse(stringifyWithoutCircular(args)),
-                eventUid: prop.uid,
-                uid: requestUid,
-              });
-            });
-          }),
-        ];
+  };
+
+  createEvent = (eventUid: string, ...args: any) => {
+    return new Promise((resolve) => {
+      const requestUid = randomId();
+      this.transport.on(
+        "respond_to_event",
+        ({
+          data,
+          uid,
+          eventUid,
+        }: {
+          data: any;
+          uid: string;
+          eventUid: string;
+        }) => {
+          if (uid === requestUid && eventUid === eventUid) {
+            resolve(data);
+          }
+        }
+      );
+      this.transport.emit("request_event", {
+        eventArguments: JSON.parse(stringifyWithoutCircular(args)),
+        eventUid: eventUid,
+        uid: requestUid,
+      });
     });
-    const children = this.state.runningViews
-      .filter((runningView) => runningView.parentUid === view.uid)
-      .sort((a, b) => a.childIndex - b.childIndex)
-      .map((runningView) => this.renderView(runningView));
-    return React.createElement(componentToRender, {
-      ...props,
-      children: children.length > 0 ? children : undefined,
-    });
-  }
+  };
   render = () => {
-    const roots = this.state.runningViews.filter((view) => view.isRoot);
-    if (roots.length === 0) {
-      return <></>;
-    }
-    return roots.map(this.renderView);
-  }
+    return (
+      <ViewsRenderer
+        views={this.props.views}
+        viewsData={this.state.runningViews}
+        createEvent={this.createEvent}
+      />
+    );
+  };
 }
 
 export default Client;
