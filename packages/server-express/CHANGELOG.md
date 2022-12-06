@@ -1,5 +1,11 @@
 # @react-fullstack/server-express
 
+## 0.3.1-alpha.8
+
+### Patch Changes
+
+- .
+
 ## 0.3.1-alpha.7
 
 ### Patch Changes

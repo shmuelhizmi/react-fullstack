@@ -1,5 +1,13 @@
 # @react-fullstack/fullstack-socket-client
 
+## 0.3.1-alpha.8
+
+### Patch Changes
+
+- .
+- Updated dependencies
+  - @react-fullstack/fullstack@0.3.1-alpha.8
+
 ## 0.3.1-alpha.7
 
 ### Patch Changes

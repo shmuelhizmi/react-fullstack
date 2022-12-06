@@ -11,6 +11,7 @@
     "@react-fullstack/plugin-server-side-rendering": "0.3.0"
   },
   "changesets": [
+    "big-pears-impress",
     "green-goats-report",
     "sweet-laws-change",
     "two-pugs-sneeze"

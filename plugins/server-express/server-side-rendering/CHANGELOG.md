@@ -1,5 +1,13 @@
 # @react-fullstack/plugin-server-side-rendering
 
+## 0.3.1-alpha.8
+
+### Patch Changes
+
+- .
+- Updated dependencies
+  - @react-fullstack/server-express@0.3.1-alpha.8
+
 ## 0.3.1-alpha.7
 
 ### Patch Changes
