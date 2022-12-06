@@ -59,9 +59,6 @@
   "peerDependencies": {
     "react": ">=18.0.0"
   },
-  "dependencies": {
-    "crypto-random-string": "5.0.0"
-  },
   "devDependencies": {
     "@types/react": "18.0.25",
     "concurrently": "7.5.0",
