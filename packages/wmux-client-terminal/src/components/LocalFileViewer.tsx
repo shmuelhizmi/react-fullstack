@@ -16,7 +16,7 @@ export const LocalFileViewer = ({ filePath }: LocalFileViewerProps): ReactNode =
     setContent(null);
     setError(null);
     readFile(filePath, "utf-8")
-      .then((text) => { if (!cancelled) setContent(text); })
+      .then((text) => { if (!cancelled) setContent(text.toString()); })
       .catch((err) => { if (!cancelled) setError(String(err)); });
     return () => { cancelled = true; };
   }, [filePath]);
