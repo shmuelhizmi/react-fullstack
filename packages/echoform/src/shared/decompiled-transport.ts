@@ -66,7 +66,6 @@ export function decompileTransport<TEvents extends Record<string | number, unkno
     handler: (data: AppEvents[Key]) => void
   ): (() => void) | undefined => {
     if (destroyed) return undefined;
-    ensureRawListener();
 
     const eventName = event as string;
     let handlerSet = appHandlers.get(eventName);
@@ -75,6 +74,7 @@ export function decompileTransport<TEvents extends Record<string | number, unkno
       appHandlers.set(eventName, handlerSet);
     }
     handlerSet.add(handler as (data: unknown) => void);
+    ensureRawListener();
 
     return () => {
       const set = appHandlers.get(eventName);

@@ -7,7 +7,10 @@ import type {
 } from "../shared/types";
 import type { EventUid, StreamUid } from "../shared/branded.types";
 import { createRequestUid } from "../shared/branded.types";
-import { decompileTransport } from "../shared/decompiled-transport";
+import {
+  decompileTransport,
+  type DecompileTransport,
+} from "../shared/decompiled-transport";
 import { randomId } from "../shared/id";
 import { ViewsRenderer } from "../shared/ViewsRenderer";
 import { stringifyWithoutCircular } from "../shared/serialization.utils";
@@ -63,7 +66,7 @@ function Client<TEvents extends Record<string | number, unknown> = Record<string
   requestViewTreeOnMount = true,
 }: ClientProps<TEvents>): React.ReactElement {
   const [runningViews, setRunningViews] = useState<ReadonlyArray<ExistingSharedViewData>>([]);
-  const transportRef = useRef(decompileTransport(rawTransport));
+  const transportRef = useRef<DecompileTransport | undefined>(undefined);
   const streamListenersRef = useRef<Map<StreamUid, Set<(chunk: SerializableValue) => void>>>(new Map());
   const pendingReplayRef = useRef<Map<StreamUid, ReadonlyArray<SerializableValue>>>(new Map());
 
@@ -71,6 +74,10 @@ function Client<TEvents extends Record<string | number, unknown> = Record<string
     return new Promise((resolve, reject) => {
       const requestUid = createRequestUid(randomId());
       const transport = transportRef.current;
+      if (transport === undefined) {
+        reject(new Error("echoform: client transport is not active"));
+        return;
+      }
 
       let unsubscribe: (() => void) | undefined;
 
@@ -133,7 +140,8 @@ function Client<TEvents extends Record<string | number, unknown> = Record<string
   }, []);
 
   useEffect(() => {
-    const transport = transportRef.current;
+    const transport = decompileTransport(rawTransport);
+    transportRef.current = transport;
 
     const updateViewsTreeHandler = ({ views }: AppEvents['update_views_tree']): void => {
       setRunningViews(views);
@@ -190,6 +198,9 @@ function Client<TEvents extends Record<string | number, unknown> = Record<string
     }
 
     return () => {
+      if (transportRef.current === transport) {
+        transportRef.current = undefined;
+      }
       unsubscribeViewsTree?.();
       unsubscribeUpdateView?.();
       unsubscribeDeleteView?.();
@@ -200,7 +211,7 @@ function Client<TEvents extends Record<string | number, unknown> = Record<string
       pendingReplayRef.current = new Map();
       transport.destroy();
     };
-  }, [requestViewTreeOnMount]);
+  }, [rawTransport, requestViewTreeOnMount]);
 
   return (
     <ViewsRenderer
