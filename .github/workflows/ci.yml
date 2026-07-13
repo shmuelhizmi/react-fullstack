@@ -42,9 +42,13 @@ jobs:
         working-directory: packages/echoform
         run: bun run test
 
+      # Use the workspace-pinned playwright so the browser revision matches
+      # @playwright/test from the lockfile. `bunx playwright` resolves the
+      # registry's latest (no root bin exists with isolated installs) and
+      # installs a mismatched chromium_headless_shell revision.
       - name: Install Playwright browsers
         working-directory: demo/todo-app
-        run: bunx playwright install --with-deps chromium
+        run: ./node_modules/.bin/playwright install --with-deps chromium
 
       - name: Run Playwright tests (todo-app)
         working-directory: demo/todo-app

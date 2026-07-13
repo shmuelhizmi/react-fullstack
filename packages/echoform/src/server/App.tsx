@@ -326,6 +326,13 @@ function removeAt<T>(items: ReadonlyArray<T>, index: number): T[] {
   return [...items.slice(0, index), ...items.slice(index + 1)];
 }
 
+// View-state events are meaningless to a client that has no base state yet: the
+// client applies `update_view` as a partial upsert, so a prop diff arriving before
+// the `update_views_tree` snapshot materializes a view with only the changed props
+// (missing callbacks/data) and crashes the client renderer. These events are
+// therefore withheld per client until that client has requested the view tree.
+const VIEW_SYNC_EVENTS: ReadonlySet<keyof AppEvents> = new Set(["update_view", "delete_view"]);
+
 const App = forwardRef<AppHandle, AppProps>(function App({ children, transport, paused, transportIsClient, skipCallbackValidation }, ref) {
   const serverRef = useRef<DecompileTransport>(decompileTransport(transport));
   const clientsRef = useRef<ReadonlyArray<DecompileTransport>>([]);
@@ -335,6 +342,7 @@ const App = forwardRef<AppHandle, AppProps>(function App({ children, transport, 
   const cleanUpFunctionsRef = useRef<ReadonlyArray<() => void>>([]);
   const clientCleanupMapRef = useRef<Map<AnyTransport, () => void>>(new Map());
   const clientEventAuthRef = useRef<Map<DecompileTransport, Set<EventUid>>>(new Map());
+  const syncedClientsRef = useRef<ReadonlySet<DecompileTransport>>(new Set());
   const eventChainRef = useRef(Promise.resolve());
   const streamBufferRegistryRef = useRef<Map<StreamUid, StreamBufferGetter>>(new Map());
   const skipValidationRef = useRef(skipCallbackValidation ?? false);
@@ -350,7 +358,9 @@ const App = forwardRef<AppHandle, AppProps>(function App({ children, transport, 
     const server = serverRef.current;
     if (!server) return;
     server.emit(event, data);
+    const requiresSyncedClient = VIEW_SYNC_EVENTS.has(event);
     for (const client of clientsRef.current) {
+      if (requiresSyncedClient && !syncedClientsRef.current.has(client)) continue;
       client.emit(event, data);
     }
   }, []);
@@ -379,6 +389,7 @@ const App = forwardRef<AppHandle, AppProps>(function App({ children, transport, 
   const registerSocketListener = useCallback((client: DecompileTransport) => {
     const cleanReqTree = client.on("request_views_tree", () => {
       handleViewsTreeRequest(client, existingSharedViewsRef, clientEventAuthRef, streamBufferRegistryRef);
+      syncedClientsRef.current = new Set([...syncedClientsRef.current, client]);
     });
 
     const cleanReqEvent = client.on("request_event", (eventData: AppEvents['request_event']) => {
@@ -414,6 +425,9 @@ const App = forwardRef<AppHandle, AppProps>(function App({ children, transport, 
       clientTransport.destroy();
       clientEventAuthRef.current = new Map(
         [...clientEventAuthRef.current].filter(([k]) => k !== clientTransport),
+      );
+      syncedClientsRef.current = new Set(
+        [...syncedClientsRef.current].filter((synced) => synced !== clientTransport),
       );
     }
 
@@ -481,6 +495,7 @@ const App = forwardRef<AppHandle, AppProps>(function App({ children, transport, 
       clientCleanupMapRef.current = new Map();
       viewEventsRef.current = new Map();
       clientEventAuthRef.current = new Map();
+      syncedClientsRef.current = new Set();
       existingSharedViewsRef.current = [];
     };
   }, []);

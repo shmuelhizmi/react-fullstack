@@ -15,7 +15,7 @@
     },
     "demo/dev-server": {
       "name": "@demo/dev-server",
-      "version": "1.0.13",
+      "version": "1.0.14",
       "dependencies": {
         "@playfast/wmux": "workspace:*",
         "@playfast/wmux-client-terminal": "workspace:*",
@@ -162,7 +162,7 @@
     },
     "packages/wmux": {
       "name": "@playfast/wmux",
-      "version": "0.2.12",
+      "version": "0.3.0",
       "dependencies": {
         "@playfast/echoform": "workspace:*",
         "@playfast/echoform-render": "workspace:*",
@@ -179,7 +179,7 @@
     },
     "packages/wmux-client": {
       "name": "@playfast/wmux-client",
-      "version": "0.0.14",
+      "version": "0.0.15",
       "dependencies": {
         "@dnd-kit/react": "^0.3.2",
         "@heroui/react": "^3.0.0",
@@ -208,7 +208,7 @@
     },
     "packages/wmux-client-terminal": {
       "name": "@playfast/wmux-client-terminal",
-      "version": "0.0.6",
+      "version": "0.0.7",
       "dependencies": {
         "@opentui/core": "0.4.1",
         "@opentui/react": "0.4.1",
