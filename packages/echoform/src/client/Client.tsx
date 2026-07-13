@@ -7,7 +7,10 @@ import type {
 } from "../shared/types";
 import type { EventUid, StreamUid } from "../shared/branded.types";
 import { createRequestUid } from "../shared/branded.types";
-import { decompileTransport } from "../shared/decompiled-transport";
+import {
+  decompileTransport,
+  type DecompileTransport,
+} from "../shared/decompiled-transport";
 import { randomId } from "../shared/id";
 import { ViewsRenderer } from "../shared/ViewsRenderer";
 import { stringifyWithoutCircular } from "../shared/serialization.utils";
@@ -50,27 +53,51 @@ function applyViewDeletion(
   return [...state.slice(0, runningViewIndex), ...state.slice(runningViewIndex + 1)];
 }
 
-interface ClientProps<TEvents extends Record<string | number, unknown> = Record<string, unknown>> {
+export interface ClientViewsState {
+  readonly views: ReadonlyArray<ExistingSharedViewData>;
+  readonly hasReceivedViewTree: boolean;
+}
+
+interface ClientPropsExternalApi<TEvents extends Record<string | number, unknown> = Record<string, unknown>> {
   readonly transport: Transport<TEvents>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- props are built dynamically by ViewsRenderer
   readonly views: Readonly<Record<string, React.ComponentType<any>>>;
   readonly requestViewTreeOnMount?: boolean;
+  readonly onViewsChange?: (state: ClientViewsState) => void;
 }
 
 function Client<TEvents extends Record<string | number, unknown> = Record<string, unknown>>({
   transport: rawTransport,
   views,
   requestViewTreeOnMount = true,
-}: ClientProps<TEvents>): React.ReactElement {
+  onViewsChange,
+}: ClientPropsExternalApi<TEvents>): React.ReactElement {
   const [runningViews, setRunningViews] = useState<ReadonlyArray<ExistingSharedViewData>>([]);
-  const transportRef = useRef(decompileTransport(rawTransport));
+  const runningViewsRef = useRef<ReadonlyArray<ExistingSharedViewData>>([]);
+  const transportRef = useRef<DecompileTransport | undefined>(undefined);
+  const hasReceivedViewTreeRef = useRef(false);
+  const onViewsChangeRef = useRef(onViewsChange);
   const streamListenersRef = useRef<Map<StreamUid, Set<(chunk: SerializableValue) => void>>>(new Map());
   const pendingReplayRef = useRef<Map<StreamUid, ReadonlyArray<SerializableValue>>>(new Map());
+  onViewsChangeRef.current = onViewsChange;
+
+  const updateRunningViews = useCallback((nextViews: ReadonlyArray<ExistingSharedViewData>): void => {
+    runningViewsRef.current = nextViews;
+    setRunningViews(nextViews);
+    onViewsChangeRef.current?.({
+      views: nextViews,
+      hasReceivedViewTree: hasReceivedViewTreeRef.current,
+    });
+  }, []);
 
   const createEvent = useCallback((eventUid: EventUid, ...args: ReadonlyArray<SerializableValue>): Promise<SerializableValue> => {
     return new Promise((resolve, reject) => {
       const requestUid = createRequestUid(randomId());
       const transport = transportRef.current;
+      if (transport === undefined) {
+        reject(new Error("echoform: client transport is not active"));
+        return;
+      }
 
       let unsubscribe: (() => void) | undefined;
 
@@ -133,18 +160,22 @@ function Client<TEvents extends Record<string | number, unknown> = Record<string
   }, []);
 
   useEffect(() => {
-    const transport = transportRef.current;
+    const transport = decompileTransport(rawTransport);
+    transportRef.current = transport;
+    hasReceivedViewTreeRef.current = false;
+    updateRunningViews([]);
 
     const updateViewsTreeHandler = ({ views }: AppEvents['update_views_tree']): void => {
-      setRunningViews(views);
+      hasReceivedViewTreeRef.current = true;
+      updateRunningViews(views);
     };
 
     const updateViewHandler = ({ view }: AppEvents['update_view']): void => {
-      setRunningViews((state) => applyViewUpdate(state, view));
+      updateRunningViews(applyViewUpdate(runningViewsRef.current, view));
     };
 
     const deleteViewHandler = ({ viewUid }: AppEvents['delete_view']): void => {
-      setRunningViews((state) => applyViewDeletion(state, viewUid));
+      updateRunningViews(applyViewDeletion(runningViewsRef.current, viewUid));
     };
 
     const streamChunkHandler = ({ streamUid, chunk }: AppEvents['stream_chunk']): void => {
@@ -190,6 +221,9 @@ function Client<TEvents extends Record<string | number, unknown> = Record<string
     }
 
     return () => {
+      if (transportRef.current === transport) {
+        transportRef.current = undefined;
+      }
       unsubscribeViewsTree?.();
       unsubscribeUpdateView?.();
       unsubscribeDeleteView?.();
@@ -198,9 +232,11 @@ function Client<TEvents extends Record<string | number, unknown> = Record<string
       unsubscribeStreamReplay?.();
       streamListenersRef.current = new Map();
       pendingReplayRef.current = new Map();
+      runningViewsRef.current = [];
+      hasReceivedViewTreeRef.current = false;
       transport.destroy();
     };
-  }, [requestViewTreeOnMount]);
+  }, [rawTransport, requestViewTreeOnMount, updateRunningViews]);
 
   return (
     <ViewsRenderer
